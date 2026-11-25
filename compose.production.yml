@@ -1,0 +1,83 @@
+# Hireloom with Docker Compose (see the installation guide, ./README.md). Save this
+# file as compose.yml in a folder of its own, put POSTGRES_PASSWORD,
+# HIRELOOM_PASSWORD (a hash of your password, from `docker run --rm -it
+# hireloom hash-password`) and HIRELOOM_SECRET in a .env file
+# next to it, then:
+#
+#   docker compose up -d
+#
+# Add COMPOSE_PROFILES=ai to .env to run Ollama for a local model as well.
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hireloom
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: hireloom
+    volumes:
+      # Postgres 18+ keeps data in a versioned subdirectory, so mount the parent.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hireloom -d hireloom"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ${HIRELOOM_IMAGE:-hireloom:latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://hireloom:${POSTGRES_PASSWORD}@db:5432/hireloom
+      HIRELOOM_PASSWORD: ${HIRELOOM_PASSWORD:?Set HIRELOOM_PASSWORD in .env to a hash from hash-password}
+      HIRELOOM_SECRET: ${HIRELOOM_SECRET:?Set HIRELOOM_SECRET in .env}
+      HIRELOOM_BACKUP_RETENTION_DAYS: ${HIRELOOM_BACKUP_RETENTION_DAYS:-}
+      # Your time zone, e.g. Europe/Berlin: nightly backups run at 03:00 in it.
+      TZ: ${TZ:-}
+      HIRELOOM_AI_PROVIDER: ${HIRELOOM_AI_PROVIDER:-}
+      HIRELOOM_AI_URL: ${HIRELOOM_AI_URL:-}
+      HIRELOOM_AI_MODEL: ${HIRELOOM_AI_MODEL:-}
+      HIRELOOM_AI_KEY: ${HIRELOOM_AI_KEY:-}
+      HIRELOOM_AI_TIMEOUT_SECONDS: ${HIRELOOM_AI_TIMEOUT_SECONDS:-}
+      # The daily usage ping: unset, Hireloom asks after sign-in; on or off answers in advance (see Privacy in the wiki).
+      HIRELOOM_TELEMETRY: ${HIRELOOM_TELEMETRY:-}
+      # Defaults for Settings → Job search.
+      HIRELOOM_JOBS_SOURCE: ${HIRELOOM_JOBS_SOURCE:-}
+      HIRELOOM_JSEARCH_KEY: ${HIRELOOM_JSEARCH_KEY:-}
+      HIRELOOM_JSEARCH_HOST: ${HIRELOOM_JSEARCH_HOST:-}
+      HIRELOOM_ADZUNA_APP_ID: ${HIRELOOM_ADZUNA_APP_ID:-}
+      HIRELOOM_ADZUNA_KEY: ${HIRELOOM_ADZUNA_KEY:-}
+      # Gmail and Calendar: a Google OAuth client (or enter it in Settings → Google).
+      HIRELOOM_GOOGLE_CLIENT_ID: ${HIRELOOM_GOOGLE_CLIENT_ID:-}
+      HIRELOOM_GOOGLE_CLIENT_SECRET: ${HIRELOOM_GOOGLE_CLIENT_SECRET:-}
+      # The address Hireloom is reached at, for Google's redirect.
+      HIRELOOM_PUBLIC_URL: ${HIRELOOM_PUBLIC_URL:-}
+    # Only on the server itself: put a reverse proxy with HTTPS in front.
+    ports:
+      - "127.0.0.1:${HIRELOOM_PORT:-3000}:3000"
+    volumes:
+      - data:/data
+    # Room for Chromium, which prints the PDFs.
+    mem_limit: 1g
+    # Lets http://host.docker.internal reach Ollama (:11434) or LM Studio
+    # (:1234) on the host.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # A local model, with COMPOSE_PROFILES=ai in .env: `docker compose up -d`,
+  # then pull one (see "Choosing an AI provider" in the wiki). Hireloom reaches it at http://ollama:11434.
+  ollama:
+    profiles: [ai]
+    image: ollama/ollama:0.40.6
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+
+volumes:
+  pgdata:
+  data:
+  ollama:
