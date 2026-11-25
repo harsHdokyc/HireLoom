@@ -125,16 +125,30 @@ export function Contact({ children }: { children: string }) {
   return <bdi dir={hasRightToLeft(children) ? undefined : "ltr"}>{children}</bdi>;
 }
 
-/** Contact details on one line, separated by "  ·  ". */
-export function ContactLine({ items }: { items: string[] }) {
+/** A contact or project link: opens when `href` is set, otherwise plain text. */
+export function ContactLink({ label, href, className }: { label: string; href: string | null; className?: string }) {
+  const body = <Contact>{label}</Contact>;
+  if (!href) return className ? <span className={className}>{body}</span> : body;
+  return (
+    <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined} className={className ?? styles.link}>
+      {body}
+    </a>
+  );
+}
+
+/** Contact details on one line, separated by " | ". Strings stay plain text. */
+export function ContactLine({ items }: { items: Array<string | { label: string; href: string | null }> }) {
   return (
     <p className={styles.contactLine}>
-      {items.map((item, index) => (
-        <Fragment key={index}>
-          {index > 0 && CONTACT_SEPARATOR}
-          <Contact>{item}</Contact>
-        </Fragment>
-      ))}
+      {items.map((item, index) => {
+        const link = typeof item === "string" ? { label: item, href: null as string | null } : item;
+        return (
+          <Fragment key={index}>
+            {index > 0 && CONTACT_SEPARATOR}
+            <ContactLink label={link.label} href={link.href} className={styles.contactLink} />
+          </Fragment>
+        );
+      })}
     </p>
   );
 }

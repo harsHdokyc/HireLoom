@@ -56,11 +56,11 @@ describe("loadDocuments (E8-8)", () => {
   it("loads an application's documents with their themes and what the page needs", async () => {
     const ledgerly = await prisma().application.findFirstOrThrow({ where: { documents: { some: {} } } });
     const trimmed = [{ kind: "unit", unit: demoResumeUnits()[1], index: 1 }];
-    await prisma().document.updateMany({ where: { applicationId: ledgerly.id, kind: "RESUME" }, data: { themeId: "modern", trimmed } });
+    await prisma().document.updateMany({ where: { applicationId: ledgerly.id, kind: "RESUME" }, data: { themeId: "editorial", trimmed } });
     await prisma().document.updateMany({ where: { applicationId: ledgerly.id, kind: "COVER_LETTER" }, data: { themeId: null } });
 
     const loaded = await loadDocuments(ledgerly.id);
-    expect(loaded.resume).toMatchObject({ theme: { id: "modern" }, trimmed });
+    expect(loaded.resume).toMatchObject({ theme: { id: "editorial" }, trimmed });
     // No theme of its own: the base theme.
     expect(loaded.letter?.theme.id).toBe("editorial");
     expect(loaded.includeReferences).toBe(false);

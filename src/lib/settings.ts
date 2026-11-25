@@ -112,7 +112,7 @@ export const settingsSchema = z.object({
   strict: flag(true),
   /** "Show what changed" (SET-5). */
   showDiff: flag(true),
-  paper: z.enum(PaperSize).catch(PaperSize.A4),
+  paper: z.enum(PaperSize).catch(PaperSize.LETTER),
   dateFormat: z.enum(DateFormat).catch(DateFormat.DAY_MONTH_YEAR),
   defaultTone: z.enum(Tone).catch(Tone.WARM),
   /** Language for generated documents; null means "the posting's language" (SET-7). */
@@ -123,12 +123,12 @@ export const settingsSchema = z.object({
   customLanguages: stringList.catch([]),
   fileNamePattern: z.string().catch("{name} – {company} – {doc}"),
   includeRefs: flag(false),
-  /** Up to two pages unless chosen (decided 22 October 2026: resumes aren't forced to one page). */
-  pageLimit: pageLimit.catch("2"),
+  /** Keep resumes to one page by default (matches the Full Stack built-in theme). */
+  pageLimit: pageLimit.catch("1"),
   nightlyBackup: flag(true),
   /** Finished background jobs are deleted after this many hours (JOB_RETENTION_OPTIONS). */
   jobRetentionHours: z.coerce.number().refine(isJobRetention).catch(DEFAULT_JOB_RETENTION_HOURS),
-  /** A theme's id. loadSettings() reads a deleted one as Editorial. */
+  /** A theme's id. loadSettings() reads a deleted one as Full Stack (editorial). */
   baseThemeId: z.string().catch(DEFAULT_BASE_THEME),
   /** The Applications screen as last left (LST-7): view, filter and sort, e.g. "-match". */
   applicationsView: z.enum(["board", "table"]).catch("board"),

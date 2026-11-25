@@ -164,8 +164,9 @@ model Reference {
 }
 
 /// Something the user tells the AI about themselves: one of the profile's
-/// "Facts about me", or one for a single application. Never shown on a
-/// document; given to the AI with the profile when it writes.
+/// "Facts about me", or one for a single application. Profile facts also
+/// appear as Achievements on the Full Stack resume; application facts stay
+/// off documents and are only given to the AI when it writes.
 model Fact {
   id            String       @id @default(cuid())
   /// The application it's for; null for the profile's own.
@@ -272,7 +273,7 @@ enum Density {
 }
 
 /// A resume theme (RES-2…RES-4). Built-in themes use their slug as id
-/// ("editorial") and are read-only: the app never edits them, the seed keeps
+/// ("editorial" / Full Stack) and are read-only: the app never edits them, the seed keeps
 /// them in sync, and a trigger stops them from being deleted.
 model Theme {
   id            String        @id @default(cuid())

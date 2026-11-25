@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Every built-in theme rendering the demo profile (or yours, with
+ * The Full Stack built-in theme rendering the demo profile (or yours, with
  * `?profile=mine`), plus a tailored resume and a cover letter. Development only.
  */
 export default async function DevDocumentsPage({ searchParams }: PageProps<"/dev/documents">) {
@@ -36,7 +36,7 @@ export default async function DevDocumentsPage({ searchParams }: PageProps<"/dev
       <header className="flex flex-col gap-1">
         <h1 className="font-serif text-title">Documents</h1>
         <p className="text-muted">
-          {mine ? "Your profile" : "The demo profile"} in every built-in theme, on{" "}
+          {mine ? "Your profile" : "The demo profile"} in the Full Stack theme, on{" "}
           {settings.paper === "A4" ? "A4" : "US Letter"} paper.{" "}
           <a className="underline" href={mine ? "/dev/documents" : "/dev/documents?profile=mine"}>
             Show {mine ? "the demo profile" : "your profile"}
@@ -49,18 +49,12 @@ export default async function DevDocumentsPage({ searchParams }: PageProps<"/dev
             <ResumeDocument theme={theme} profile={profile} paper={settings.paper} />
           </Preview>
         ))}
-        {!mine && (
+        {!mine && editorial && (
           <>
-            <Preview label="Modern · tailored resume, single column">
-              <ResumeDocument
-                theme={themes.find((theme) => theme.id === "modern") ?? editorial}
-                profile={profile}
-                paper={settings.paper}
-                units={demoResumeUnits()}
-                layout="SINGLE"
-              />
+            <Preview label="Full Stack · tailored resume">
+              <ResumeDocument theme={editorial} profile={profile} paper={settings.paper} units={demoResumeUnits()} />
             </Preview>
-            <Preview label="Editorial · tailored resume with references">
+            <Preview label="Full Stack · tailored resume with references">
               <ResumeDocument
                 theme={editorial}
                 profile={profile}
@@ -69,22 +63,9 @@ export default async function DevDocumentsPage({ searchParams }: PageProps<"/dev
                 includeReferences
               />
             </Preview>
-            <Preview label="Editorial · cover letter">
+            <Preview label="Full Stack · cover letter">
               <CoverLetterDocument
                 theme={editorial}
-                paper={settings.paper}
-                basics={profile.basics}
-                units={demoLetterUnits()}
-                company="Ledgerly"
-                location="Amsterdam"
-                tone="WARM"
-                date={new Date(Date.UTC(2026, 8, 27))}
-                dateFormat={settings.dateFormat}
-              />
-            </Preview>
-            <Preview label="Signal · cover letter on a banner">
-              <CoverLetterDocument
-                theme={themes.find((theme) => theme.id === "signal") ?? editorial}
                 paper={settings.paper}
                 basics={profile.basics}
                 units={demoLetterUnits()}

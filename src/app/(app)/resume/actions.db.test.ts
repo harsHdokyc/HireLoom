@@ -25,6 +25,23 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const prisma = () => db.client!;
 const baseThemeId = async () => (await loadSettings()).baseThemeId;
 
+const draft = {
+  id: null,
+  name: "  Green mono ",
+  headFont: "PLEX_MONO",
+  bodyFont: "GEIST",
+  accent: "#2D6A4F",
+  layout: "SPLIT",
+  align: "LEFT",
+  headingStyle: "RULE",
+  density: "COMPACT",
+  headerStyle: "BANNER",
+  sidebarStyle: "TINTED",
+  dateStyle: "TIMELINE",
+  photoShape: "PORTRAIT",
+  photoPosition: "SIDEBAR",
+} as const;
+
 beforeEach(async () => {
   await resetDatabase(prisma());
   await seedBuiltIns(prisma());
@@ -33,8 +50,12 @@ afterAll(() => prisma().$disconnect());
 
 describe("setBaseTheme", () => {
   it("makes a theme the base resume theme", async () => {
-    expect(await setBaseTheme({ id: "modern" })).toEqual({ ok: true, data: null });
-    expect(await baseThemeId()).toBe("modern");
+    const copy = await duplicateTheme({ id: "editorial" });
+    if (!copy.ok) throw new Error(copy.error);
+    expect(await setBaseTheme({ id: "editorial" })).toEqual({ ok: true, data: null });
+    expect(await baseThemeId()).toBe("editorial");
+    expect(await setBaseTheme({ id: copy.data.id })).toEqual({ ok: true, data: null });
+    expect(await baseThemeId()).toBe(copy.data.id);
   });
 
   it("refuses a theme that doesn't exist", async () => {
@@ -44,22 +65,6 @@ describe("setBaseTheme", () => {
 });
 
 describe("saveTheme", () => {
-  const draft = {
-    id: null,
-    name: "  Green mono ",
-    headFont: "PLEX_MONO",
-    bodyFont: "GEIST",
-    accent: "#2D6A4F",
-    layout: "SPLIT",
-    align: "LEFT",
-    headingStyle: "RULE",
-    density: "COMPACT",
-    headerStyle: "BANNER",
-    sidebarStyle: "TINTED",
-    dateStyle: "TIMELINE",
-    photoShape: "PORTRAIT",
-    photoPosition: "SIDEBAR",
-  } as const;
 
   it("saves a new theme and makes it the base theme (RES-4)", async () => {
     const result = await saveTheme(draft);
@@ -76,7 +81,7 @@ describe("saveTheme", () => {
   it("edits a custom theme in place", async () => {
     const created = await saveTheme(draft);
     const id = created.ok ? created.data.id : "";
-    await setBaseTheme({ id: "classic" });
+    await setBaseTheme({ id: "editorial" });
     const result = await saveTheme({ ...draft, id, name: "Renamed", density: "AIRY" });
     expect(result).toMatchObject({ ok: true, data: { id, name: "Renamed", density: "AIRY" } });
     expect(await prisma().theme.count({ where: { builtIn: false } })).toBe(1);
@@ -92,7 +97,7 @@ describe("saveTheme", () => {
       ok: false,
       error: expect.stringMatching(/^Built-in themes can't be changed/),
     });
-    expect(await prisma().theme.findUniqueOrThrow({ where: { id: "editorial" } })).toMatchObject({ name: "Editorial" });
+    expect(await prisma().theme.findUniqueOrThrow({ where: { id: "editorial" } })).toMatchObject({ name: "Full Stack" });
   });
 
   it("refuses a theme that no longer exists, and colours that aren't hex", async () => {
@@ -104,31 +109,40 @@ describe("saveTheme", () => {
 
 describe("managing themes (E5-7)", () => {
   it("duplicates a built-in theme into a custom one, which becomes the base theme", async () => {
-    const result = await duplicateTheme({ id: "modern" });
-    expect(result).toMatchObject({ ok: true, data: { name: "Modern copy", builtIn: false }, toast: "Made “Modern copy”. It's now your base resume theme." });
+    const result = await duplicateTheme({ id: "editorial" });
+    expect(result).toMatchObject({
+      ok: true,
+      data: { name: "Full Stack copy", builtIn: false },
+      toast: "Made “Full Stack copy”. It's now your base resume theme.",
+    });
     if (!result.ok) return;
-    const modern = BUILT_IN_THEMES.find((theme) => theme.id === "modern")!;
-    expect(result.data).toMatchObject({ headFont: modern.headFont, accent: modern.accent, layout: modern.layout });
+    expect(result.data).toMatchObject({
+      headFont: BUILT_IN_THEMES[0].headFont,
+      accent: BUILT_IN_THEMES[0].accent,
+      layout: BUILT_IN_THEMES[0].layout,
+    });
     expect(await baseThemeId()).toBe(result.data.id);
   });
 
-  it("deletes a custom theme: its documents lose the link, and the base falls back to Editorial", async () => {
-    const copy = await duplicateTheme({ id: "modern" });
+  it("deletes a custom theme: its documents lose the link, and the base falls back to Full Stack", async () => {
+    const copy = await duplicateTheme({ id: "editorial" });
     if (!copy.ok) throw new Error(copy.error);
     const application = await prisma().application.create({ data: { title: "Designer · Acme", company: "Acme" } });
     await prisma().document.create({ data: { applicationId: application.id, kind: "RESUME", units: [], themeId: copy.data.id } });
 
-    expect(await deleteTheme({ id: copy.data.id })).toEqual({ ok: true, data: { baseThemeId: "editorial" }, toast: "Deleted “Modern copy”." });
+    expect(await deleteTheme({ id: copy.data.id })).toEqual({ ok: true, data: { baseThemeId: "editorial" }, toast: "Deleted “Full Stack copy”." });
     expect(await prisma().theme.findUnique({ where: { id: copy.data.id } })).toBeNull();
     expect((await prisma().document.findFirstOrThrow()).themeId).toBeNull();
     expect(await baseThemeId()).toBe("editorial");
   });
 
   it("keeps the base theme when another theme is deleted, and never deletes a built-in", async () => {
-    const copy = await duplicateTheme({ id: "modern" });
-    if (!copy.ok) throw new Error(copy.error);
-    await setBaseTheme({ id: "technical" });
-    expect(await deleteTheme({ id: copy.data.id })).toMatchObject({ ok: true, data: { baseThemeId: "technical" } });
+    const base = await duplicateTheme({ id: "editorial" });
+    if (!base.ok) throw new Error(base.error);
+    const spare = await saveTheme({ ...draft, name: "Spare" });
+    if (!spare.ok) throw new Error(spare.error);
+    await setBaseTheme({ id: base.data.id });
+    expect(await deleteTheme({ id: spare.data.id })).toMatchObject({ ok: true, data: { baseThemeId: base.data.id } });
     expect(await deleteTheme({ id: "editorial" })).toEqual({ ok: false, error: "Built-in themes can't be deleted." });
   });
 

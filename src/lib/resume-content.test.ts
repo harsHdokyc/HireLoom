@@ -3,33 +3,67 @@ import { describe, expect, it } from "vitest";
 import { demoProfile, demoResumeUnits } from "@/lib/demo-profile";
 import type { ProfileData } from "@/lib/profile";
 
-import { contactItems, displayLink, resumeContent } from "./resume-content";
+import { achievementBullets, contactItems, displayLink, parseResumeLinks, resumeContent } from "./resume-content";
 
 const today = new Date(2026, 8, 28);
 
 describe("contactItems", () => {
   const { basics } = demoProfile();
 
-  it("lists email, phone, city and country, website and LinkedIn", () => {
+  it("lists phone, email, LinkedIn, website, then city and country, with openable links", () => {
     expect(contactItems(basics, today)).toEqual([
-      "jane.doe@example.com",
-      "+31 6 1234 5678",
-      "Rotterdam, Netherlands",
-      "example.com",
-      "linkedin.com/in/janedoe-example",
+      { label: "+31 6 1234 5678", href: "tel:+31612345678" },
+      { label: "jane.doe@example.com", href: "mailto:jane.doe@example.com" },
+      { label: "LinkedIn", href: "https://linkedin.com/in/janedoe-example" },
+      { label: "example.com", href: "https://example.com/" },
+      { label: "Rotterdam, Netherlands", href: null },
     ]);
   });
 
   it("adds the age only when show-age is on", () => {
-    expect(contactItems({ ...basics, showAge: true }, today).at(-1)).toBe("Age 34");
+    expect(contactItems({ ...basics, showAge: true }, today).at(-1)).toEqual({ label: "Age 34", href: null });
     expect(contactItems({ ...basics, showAge: true, dob: "" }, today)).toHaveLength(5);
   });
 
   it("skips what's empty", () => {
     expect(contactItems({ ...basics, phone: " ", city: "", website: "" }, today)).toEqual([
-      "jane.doe@example.com",
-      "Netherlands",
-      "linkedin.com/in/janedoe-example",
+      { label: "jane.doe@example.com", href: "mailto:jane.doe@example.com" },
+      { label: "LinkedIn", href: "https://linkedin.com/in/janedoe-example" },
+      { label: "Netherlands", href: null },
+    ]);
+  });
+});
+
+describe("parseResumeLinks", () => {
+  it("reads labeled lines and bare URLs", () => {
+    expect(
+      parseResumeLinks("GitHub: https://github.com/you/repo\nLive | https://app.example.com\nhttps://docs.example.com/x/"),
+    ).toEqual([
+      { label: "GitHub", href: "https://github.com/you/repo" },
+      { label: "Live", href: "https://app.example.com/" },
+      { label: "docs.example.com/x", href: "https://docs.example.com/x/" }, // bare URL keeps a short label
+    ]);
+  });
+
+  it("keeps a plain label when there is no URL yet", () => {
+    expect(parseResumeLinks("GitHub")).toEqual([{ label: "GitHub", href: null }]);
+  });
+});
+
+describe("achievementBullets", () => {
+  it("splits facts into bullets, strips leading dashes, and joins soft wraps", () => {
+    expect(
+      achievementBullets([
+        {
+          text: "- Solved 150+ DSA problems.\n- Won hackathons; self-financed college\neducation.\n- Solo travel across 18 states.",
+        },
+        { text: "  Climbed four peaks.  " },
+      ]),
+    ).toEqual([
+      "Solved 150+ DSA problems.",
+      "Won hackathons; self-financed college education.",
+      "Solo travel across 18 states.",
+      "Climbed four peaks.",
     ]);
   });
 });
@@ -87,6 +121,7 @@ describe("resumeContent", () => {
       projects: [],
       education: [],
       publications: [],
+      achievements: [],
       skills: "",
       languages: "",
       references: [],
@@ -106,16 +141,17 @@ describe("resumeContent", () => {
   });
 
   it("lays out projects like roles, with their link as a resume shows it (PRO-13)", () => {
-    expect(resumeContent(profile).projects).toEqual([
-      {
-        id: "p1",
-        name: "Tidewater design tokens",
-        link: "github.com/janedoe/tidewater",
-        dates: "Jan 2023 – Present",
-        bullets: profile.projects[0].bullets.split("\n"),
-        skills: ["Design systems", "Figma", "HTML & CSS"],
-      },
-    ]);
+    expect(resumeContent(profile).projects[0]).toMatchObject({
+      id: "p1",
+      name: "Tidewater design tokens",
+      links: [{ label: "GitHub", href: "https://github.com/janedoe/tidewater" }],
+      dates: "Jan 2023 – Present",
+      skills: ["Design systems", "Figma", "HTML & CSS"],
+    });
+    expect(resumeContent(profile).experience[0]).toMatchObject({
+      company: "Northwind Logistics",
+      location: expect.any(String),
+    });
     expect(displayLink("https://www.example.com/work/")).toBe("example.com/work");
     expect(displayLink(" http://github.com/jane ")).toBe("github.com/jane");
     // A tailored resume takes a project's bullets from its unit, and leaves out one without a unit.

@@ -77,12 +77,17 @@
 }
 
 .contactLine {
-  margin-top: calc(var(--u) * 4);
+  margin-top: calc(var(--u) * 3);
   font-size: 0.9em;
   color: var(--doc-muted);
-  /* Keeps the double spaces around each "·". */
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.contactLink,
+.contactLink:hover {
+  color: inherit;
+  text-decoration: none;
 }
 
 /*
@@ -179,6 +184,15 @@
 
 .entry + .entry {
   margin-top: calc(var(--u) * var(--item-gap));
+}
+
+/* Company line + role/location line for the Full Stack one-pager. */
+.experienceHead {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 1);
+  break-after: avoid;
+  break-inside: avoid;
 }
 
 /* A role's or degree's title line stays with what follows it. */

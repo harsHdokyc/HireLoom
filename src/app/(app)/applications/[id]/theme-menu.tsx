@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 /**
- * "Editorial theme ▾" above the Resume and Cover letter tabs' preview (#226,
+ * "Full Stack theme ▾" above the Resume and Cover letter tabs' preview (#226,
  * public issue 10): every theme, built-ins first, with the base theme marked.
  * Picking one gives the application's resume and cover letter that theme.
  */
@@ -48,7 +48,7 @@ export function ThemeMenu({
               {index > 0 && !theme.builtIn && themes[index - 1].builtIn && <DropdownMenuSeparator />}
               <DropdownMenuRadioItem value={theme.id}>
                 {theme.name}
-                {/* The space only keeps the item's name readable: "Modern base theme". */}
+                {/* The space only keeps the item's name readable: "Full Stack base theme". */}
                 {theme.id === baseThemeId && <> <span className="text-meta text-muted">base theme</span></>}
               </DropdownMenuRadioItem>
             </Fragment>

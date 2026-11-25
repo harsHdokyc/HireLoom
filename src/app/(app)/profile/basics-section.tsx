@@ -30,7 +30,7 @@ const FIELDS: FieldSpec[] = [
   { field: "email", label: "Email", type: "email", placeholder: "john.doe@example.com", autoComplete: "email" },
   { field: "phone", label: "Phone", type: "tel", placeholder: "+1 555 010 0000", autoComplete: "tel" },
   { field: "dob", label: "Date of birth", type: "date", autoComplete: "bday" },
-  { field: "website", label: "Website", placeholder: "johndoe.example.com", autoComplete: "url" },
+  { field: "website", label: "Website", placeholder: "github.com/you or your-site.com", autoComplete: "url" },
   { field: "address", label: "Street address", wide: true, placeholder: "12 Main Street", autoComplete: "street-address" },
   { field: "city", label: "City", placeholder: "Springfield", autoComplete: "address-level2" },
   { field: "country", label: "Country", placeholder: "United States", autoComplete: "country-name" },

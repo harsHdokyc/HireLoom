@@ -53,9 +53,11 @@ function ProjectForm({
         onChange={(event) => set({ name: event.target.value })}
         autoFocus={autoFocus}
       />
-      <Input
-        label="Link"
-        placeholder="github.com/you/churn-predictor"
+      <Textarea
+        label="Links"
+        placeholder={"GitHub: https://github.com/you/repo\nLive: https://your-app.example.com"}
+        hint="One per line. Use Label: url so the resume shows GitHub, Live, … as clickable links."
+        rows={2}
         value={entry.link}
         onChange={(event) => set({ link: event.target.value })}
       />

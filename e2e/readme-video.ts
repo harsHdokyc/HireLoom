@@ -77,15 +77,16 @@ test("a run through the app", async ({ page }) => {
   await expect(page.locator('[data-unit="greeting"]')).toBeVisible();
   await linger(page, 2500);
 
-  // Switching the resume's theme.
+  // The single built-in resume theme, then a customised copy.
   await page.goto("/resume");
-  await expect(page.getByRole("button", { name: "Editorial theme, in use" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Full Stack theme, in use" })).toBeVisible();
   await linger(page);
-  for (const theme of ["Classic", "Modern", "Technical"]) {
-    await page.getByRole("button", { name: `${theme} theme` }).click();
-    await expect(page.getByRole("button", { name: `${theme} theme, in use` })).toBeVisible();
-    await linger(page, 1500);
-  }
+  await page.getByRole("button", { name: "Duplicate Full Stack" }).click();
+  await expect(page.getByRole("button", { name: "Full Stack copy theme, in use" })).toBeVisible();
+  await linger(page, 1500);
+  await page.getByRole("button", { name: "Full Stack theme" }).click();
+  await expect(page.getByRole("button", { name: "Full Stack theme, in use" })).toBeVisible();
+  await linger(page, 1500);
 
   const video = page.video();
   await page.close();

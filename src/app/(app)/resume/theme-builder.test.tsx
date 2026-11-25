@@ -18,7 +18,7 @@ const group = (name: string) => screen.getByRole("radiogroup", { name });
 
 describe("draftFrom", () => {
   it("starts a new “My theme” from a built-in", () => {
-    expect(draftFrom(editorial)).toMatchObject({ id: null, name: "My theme", headFont: "NEWSREADER", accent: "#7a3b2e" });
+    expect(draftFrom(editorial)).toMatchObject({ id: null, name: "My theme", headFont: "GEIST", accent: "#444444" });
   });
 
   it("edits a custom theme in place", () => {
@@ -30,7 +30,7 @@ describe("ThemeBuilder", () => {
   it("offers every setting, starting from the draft (RES-3)", () => {
     renderBuilder();
     expect(screen.getByLabelText("Theme name")).toHaveValue("My theme");
-    expect(within(group("Heading font")).getByRole("radio", { name: "Newsreader" })).toBeChecked();
+    expect(within(group("Heading font")).getByRole("radio", { name: "Geist" })).toBeChecked();
     expect(within(group("Body font")).getByRole("radio", { name: "Geist" })).toBeChecked();
     expect(within(group("Layout")).getAllByRole("radio").map((radio) => radio.textContent)).toEqual([
       "Single column",
@@ -38,7 +38,7 @@ describe("ThemeBuilder", () => {
       "Sidebar left",
       "Sidebar right",
     ]);
-    expect(within(group("Header")).getByRole("radio", { name: "Left" })).toBeChecked();
+    expect(within(group("Header")).getByRole("radio", { name: "Centered" })).toBeChecked();
     expect(within(group("Header style")).getByRole("radio", { name: "Plain" })).toBeChecked();
     expect(within(group("Section titles")).getAllByRole("radio").map((radio) => radio.textContent)).toEqual([
       "Underlined",
@@ -47,8 +47,9 @@ describe("ThemeBuilder", () => {
       "Accent bar",
       "Tinted band",
     ]);
+    expect(within(group("Section titles")).getByRole("radio", { name: "Underlined" })).toBeChecked();
     expect(within(group("Dates")).getByRole("radio", { name: "Beside the title" })).toBeChecked();
-    expect(within(group("Spacing")).getByRole("radio", { name: "Regular" })).toBeChecked();
+    expect(within(group("Spacing")).getByRole("radio", { name: "Compact" })).toBeChecked();
   });
 
   it("lists serifs, then sans, then mono", () => {
@@ -90,6 +91,7 @@ describe("ThemeBuilder", () => {
     renderBuilder();
     expect(within(group("Accent")).getAllByRole("radio").map((radio) => radio.getAttribute("aria-label"))).toEqual([
       "Ink",
+      "Charcoal",
       "Slate",
       "Navy",
       "Blue",
@@ -102,17 +104,17 @@ describe("ThemeBuilder", () => {
       "Rose",
       "Plum",
     ]);
-    expect(within(group("Accent")).getByRole("radio", { name: "Brick" })).toBeChecked();
+    expect(within(group("Accent")).getByRole("radio", { name: "Charcoal" })).toBeChecked();
   });
 
   it("keeps a colour that isn't a swatch on offer", () => {
-    renderBuilder(draftFrom(BUILT_IN_THEMES.find((theme) => theme.id === "minimal")!));
+    renderBuilder({ ...draftFrom(editorial), accent: "#6f6a62" });
     expect(within(group("Accent")).getByRole("radio", { name: "Stone" })).toBeChecked();
   });
 
   it("takes any colour from the picker, or as hex once it's whole", async () => {
     const { onChange } = renderBuilder();
-    expect(screen.getByLabelText("Hex color")).toHaveValue("#7a3b2e");
+    expect(screen.getByLabelText("Hex color")).toHaveValue("#444444");
     fireEvent.change(screen.getByLabelText("Custom color"), { target: { value: "#c0ffee" } });
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ accent: "#c0ffee" }));
     onChange.mockClear();

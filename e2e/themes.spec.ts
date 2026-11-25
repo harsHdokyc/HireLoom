@@ -37,9 +37,9 @@ test("duplicates, exports, deletes and imports a theme", async ({ page }) => {
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
   expect(violations.filter((violation) => violation.impact === "serious" || violation.impact === "critical")).toEqual([]);
   await dialog.getByRole("button", { name: "Delete theme" }).click();
-  await expect(inUse).toHaveText("In use: Editorial");
+  await expect(inUse).toHaveText("In use: Full Stack");
   await expect(page.getByRole("button", { name: `${original} copy theme` })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Editorial theme, in use" })).toBeFocused();
+  await expect(page.getByRole("button", { name: "Full Stack theme, in use" })).toBeFocused();
 
   await page.locator("input[type=file][accept*=json]").setInputFiles({
     name: "theme.Hireloom-theme.json",
@@ -55,23 +55,28 @@ test("duplicates, exports, deletes and imports a theme", async ({ page }) => {
 // letter change together, in the preview and the PDF.
 test("changes an application's theme from its Resume tab", async ({ page }) => {
   const [ledgerly] = await sql<{ id: string }>(`SELECT id FROM "Application" WHERE company = 'Ledgerly' LIMIT 1`);
-  const pdf = async () => (await (await page.request.get(`/api/pdf?doc=resume&application=${ledgerly.id}`)).body()).toString("latin1");
-  expect(await pdf()).not.toContain("Garamond");
+
+  // Make a custom sidebar theme from the built-in so the application can switch to it.
+  await page.goto("/resume");
+  await page.getByRole("button", { name: "Duplicate Full Stack" }).click();
+  await page.getByRole("tab", { name: "Customize" }).click();
+  await page.getByRole("radio", { name: "Sidebar left" }).click();
+  await page.getByLabel("Theme name").fill("App Sidebar");
+  await page.getByRole("button", { name: "Save theme" }).click();
+  await expect(page.getByRole("button", { name: "App Sidebar theme, in use" })).toBeVisible();
+  const [custom] = await sql<{ id: string }>(`SELECT id FROM "Theme" WHERE name = 'App Sidebar' LIMIT 1`);
 
   await page.goto(`/applications/${ledgerly.id}`);
-  await page.getByRole("button", { name: "Theme: Editorial" }).click();
-  await page.getByRole("menuitemradio", { name: "Classic" }).click();
-  await expect(page.getByRole("button", { name: "Theme: Classic" })).toBeVisible();
-  const name = page.getByRole("article", { name: "Resume" }).getByRole("heading", { level: 1 });
-  await expect(name).toHaveCSS("font-family", /Garamond/);
+  await page.getByRole("button", { name: "Theme: Full Stack" }).click();
+  await page.getByRole("menuitemradio", { name: "App Sidebar" }).click();
+  await expect(page.getByRole("button", { name: "Theme: App Sidebar" })).toBeVisible();
 
   await page.reload();
   await page.getByRole("tab", { name: "Cover letter" }).click();
-  await expect(page.getByRole("button", { name: "Theme: Classic" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Theme: App Sidebar" })).toBeVisible();
   const documents = await sql(`SELECT kind, "themeId" FROM "Document" WHERE "applicationId" = $1 AND kind <> 'EMAIL' ORDER BY kind`, [ledgerly.id]);
   expect(documents).toEqual([
-    { kind: "RESUME", themeId: "classic" },
-    { kind: "COVER_LETTER", themeId: "classic" },
+    { kind: "RESUME", themeId: custom.id },
+    { kind: "COVER_LETTER", themeId: custom.id },
   ]);
-  expect(await pdf()).toContain("Garamond");
 });

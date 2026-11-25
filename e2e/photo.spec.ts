@@ -37,7 +37,7 @@ test("adds a photo, cropped from the keyboard, and shows it on the base resume a
 
   await page.goto("/resume");
   const resume = page.getByRole("article", { name: "Resume" });
-  // Editorial: a circle at the end of the header.
+  // Full Stack: a circle at the end of the header.
   const photo = resume.getByRole("img", { name: "Jane Doe" });
   await expect(photo).toBeVisible();
   const box = (await photo.boundingBox())!;
@@ -51,7 +51,7 @@ test("takes the theme builder's shape and position", async ({ page }) => {
   await page.getByRole("tab", { name: "Customize" }).click();
   await page.getByRole("radiogroup", { name: "Photo", exact: true }).getByRole("radio", { name: "Portrait" }).click();
   const positions = page.getByRole("radiogroup", { name: "Photo position" });
-  // Editorial has no sidebar to put it in.
+  // Full Stack has no sidebar to put it in.
   await expect(positions.getByRole("radio")).toHaveText(["End of the header", "Start of the header", "Above the name"]);
   await positions.getByRole("radio", { name: "Start of the header" }).click();
 

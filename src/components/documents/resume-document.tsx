@@ -9,7 +9,7 @@ import type { ProfileData } from "@/lib/profile";
 import { resumeContent, type ResumeContent, type ResumeOptions } from "@/lib/resume-content";
 import { PHOTO_SHAPES, resolveTheme, type ThemeData } from "@/lib/themes";
 
-import { Contact, ContactLine, DocumentPage, DocumentSection, plainUnit, type UnitRenderer } from "./document-page";
+import { Contact, ContactLink, ContactLine, DocumentPage, DocumentSection, plainUnit, type UnitRenderer } from "./document-page";
 import styles from "./document.module.css";
 
 type ResumeDocumentProps = ResumeOptions & {
@@ -32,6 +32,7 @@ const sampleText = (content: ResumeContent) =>
     content.summary,
     ...content.experience.flatMap((role) => [role.role, ...role.bullets]),
     ...content.projects.flatMap((project) => [project.name, ...project.bullets]),
+    ...content.achievements,
   ].join(" ");
 
 /**
@@ -51,6 +52,18 @@ export function ResumeDocument({ theme, profile, paper, layout, language, render
   const photo = (size: "header" | "sidebar", className?: string) =>
     content.photo && <ResumePhoto key="photo" src={content.photo} name={content.name} shape={shape} size={size} className={className} />;
 
+  const skillsSection = content.skills && (
+    <DocumentSection key="skills" title={labels.skills}>
+      {renderUnit({ id: "skills", children: <p>{content.skills}</p> })}
+    </DocumentSection>
+  );
+  const languagesSection = content.languages && (
+    <DocumentSection key="languages" title={labels.languages}>
+      {renderUnit({ id: "languages", children: <p>{content.languages}</p> })}
+    </DocumentSection>
+  );
+
+  // Sidebar layouts keep contact + skills + languages in the sidebar.
   const sidebar = [
     position === PhotoPosition.SIDEBAR && photo("sidebar"),
     resolved.split && content.contacts.length > 0 && (
@@ -58,30 +71,29 @@ export function ResumeDocument({ theme, profile, paper, layout, language, render
         <ul className={styles.contactList}>
           {content.contacts.map((item, index) => (
             <li key={index}>
-              <Contact>{item}</Contact>
+              <ContactLink label={item.label} href={item.href} />
             </li>
           ))}
         </ul>
       </DocumentSection>
     ),
-    content.skills && (
-      <DocumentSection key="skills" title={labels.skills}>
-        {renderUnit({ id: "skills", children: <p>{content.skills}</p> })}
-      </DocumentSection>
-    ),
-    content.languages && (
-      <DocumentSection key="languages" title={labels.languages}>
-        {renderUnit({ id: "languages", children: <p>{content.languages}</p> })}
-      </DocumentSection>
-    ),
+    resolved.split && skillsSection,
+    resolved.split && languagesSection,
   ].filter(Boolean);
 
+  // Full Stack one-pager: no tagline under the name (summary covers it).
+  const showHeadline = !(theme.layout === "SINGLE" && theme.align === "CENTER" && theme.density === "COMPACT");
+
+  // Single-column order: summary → skills → experience → projects →
+  // education → achievements (then publications / references).
   const main = [
     content.summary && (
       <DocumentSection key="summary" title={labels.profile}>
         {renderUnit({ id: "summary", children: <p className={styles.summary}>{content.summary}</p> })}
       </DocumentSection>
     ),
+    !resolved.split && skillsSection,
+    !resolved.split && languagesSection,
     content.experience.length > 0 && (
       <DocumentSection key="experience" title={labels.experience}>
         {content.experience.map((role) => (
@@ -89,23 +101,21 @@ export function ResumeDocument({ theme, profile, paper, layout, language, render
             {renderUnit({
               id: `experience:${role.id}`,
               className: styles.entry,
-              head: <EntryHead title={role.role} at={role.company} dates={role.dates} timeline={resolved.timeline} />,
-              children: (
-                <>
-                  {role.bullets.length > 0 && (
-                    <ul className={styles.bullets}>
-                      {role.bullets.map((bullet, index) => (
-                        <li key={index}>{bullet}</li>
-                      ))}
-                    </ul>
-                  )}
-                  {role.skills.length > 0 && (
-                    <p className={styles.entrySkills}>
-                      <span className={styles.accent}>{`${labels.skills} · `}</span>
-                      {role.skills.join(", ")}
-                    </p>
-                  )}
-                </>
+              head: (
+                <ExperienceHead
+                  company={role.company}
+                  role={role.role}
+                  location={role.location}
+                  dates={role.dates}
+                  timeline={resolved.timeline}
+                />
+              ),
+              children: role.bullets.length > 0 && (
+                <ul className={styles.bullets}>
+                  {role.bullets.map((bullet, index) => (
+                    <li key={index}>{bullet}</li>
+                  ))}
+                </ul>
               ),
             })}
           </Fragment>
@@ -114,39 +124,44 @@ export function ResumeDocument({ theme, profile, paper, layout, language, render
     ),
     content.projects.length > 0 && (
       <DocumentSection key="projects" title={labels.projects}>
-        {content.projects.map((project) => (
-          <Fragment key={project.id}>
-            {renderUnit({
-              id: `project:${project.id}`,
-              className: styles.entry,
-              head: (
-                <EntryHead
-                  title={project.name}
-                  at={project.link && <Contact>{project.link}</Contact>}
-                  dates={project.dates}
-                  timeline={resolved.timeline}
-                />
-              ),
-              children: (
-                <>
-                  {project.bullets.length > 0 && (
-                    <ul className={styles.bullets}>
-                      {project.bullets.map((bullet, index) => (
-                        <li key={index}>{bullet}</li>
-                      ))}
-                    </ul>
-                  )}
-                  {project.skills.length > 0 && (
-                    <p className={styles.entrySkills}>
-                      <span className={styles.accent}>{`${labels.skills} · `}</span>
-                      {project.skills.join(", ")}
-                    </p>
-                  )}
-                </>
-              ),
-            })}
-          </Fragment>
-        ))}
+        {content.projects.map((project) => {
+          const stack = project.skills.length > 0 ? project.skills.join(", ") : "";
+          const links =
+            project.links.length > 0 ? (
+              <>
+                {project.links.map((link, index) => (
+                  <Fragment key={`${link.label}-${index}`}>
+                    {index > 0 && ", "}
+                    <ContactLink label={link.label} href={link.href} />
+                  </Fragment>
+                ))}
+              </>
+            ) : null;
+          const at =
+            stack && links ? (
+              <>
+                {stack} ({links})
+              </>
+            ) : (
+              stack || links
+            );
+          return (
+            <Fragment key={project.id}>
+              {renderUnit({
+                id: `project:${project.id}`,
+                className: styles.entry,
+                head: <EntryHead title={project.name} at={at} dates={project.dates} timeline={resolved.timeline} separator=" - " />,
+                children: project.bullets.length > 0 && (
+                  <ul className={styles.bullets}>
+                    {project.bullets.map((bullet, index) => (
+                      <li key={index}>{bullet}</li>
+                    ))}
+                  </ul>
+                ),
+              })}
+            </Fragment>
+          );
+        })}
       </DocumentSection>
     ),
     content.education.length > 0 && (
@@ -161,6 +176,15 @@ export function ResumeDocument({ theme, profile, paper, layout, language, render
             })}
           </Fragment>
         ))}
+      </DocumentSection>
+    ),
+    content.achievements.length > 0 && (
+      <DocumentSection key="achievements" title={labels.achievements}>
+        <ul className={styles.bullets}>
+          {content.achievements.map((bullet, index) => (
+            <li key={index}>{bullet}</li>
+          ))}
+        </ul>
       </DocumentSection>
     ),
     content.publications.length > 0 && (
@@ -211,9 +235,9 @@ export function ResumeDocument({ theme, profile, paper, layout, language, render
 
   // Reading order matches what you see: the sidebar comes first in sidebar
   // layouts (and keeps its column even when empty) unless it's at the end of
-  // the line, and its sections follow the main ones in a single column.
+  // the line; single-column keeps one ordered column.
   const columns = !resolved.split
-    ? [main, sidebar].filter((sections) => sections.length > 0)
+    ? [main]
     : resolved.sidebarEnd
       ? [main, sidebar]
       : [sidebar, main];
@@ -223,7 +247,7 @@ export function ResumeDocument({ theme, profile, paper, layout, language, render
   const title = (
     <>
       <h1 className={styles.name}>{content.name}</h1>
-      {content.headline && <p className={styles.headline}>{content.headline}</p>}
+      {showHeadline && content.headline && <p className={styles.headline}>{content.headline}</p>}
       {!resolved.split && content.contacts.length > 0 && <ContactLine items={content.contacts} />}
     </>
   );
@@ -283,7 +307,20 @@ const breakAfterDash = (dates: string) =>
  * the line, or before it in a timeline column (the dates come first then, so
  * they float into the column next to the title).
  */
-function EntryHead({ title, at, dates, timeline }: { title: string; at: ReactNode; dates: string; timeline: boolean }) {
+function EntryHead({
+  title,
+  at,
+  dates,
+  timeline,
+  separator = ", ",
+}: {
+  title: string;
+  at: ReactNode;
+  dates: string;
+  timeline: boolean;
+  /** Between the title and `at`; projects use " - ". */
+  separator?: string;
+}) {
   const datesSpan = dates && <span className={styles.dates}>{timeline ? breakAfterDash(dates) : dates}</span>;
   return (
     <div className={styles.entryHead}>
@@ -292,12 +329,52 @@ function EntryHead({ title, at, dates, timeline }: { title: string; at: ReactNod
         <span className={styles.entryTitle}>{title}</span>
         {at && (
           <>
-            {title && ", "}
+            {title && separator}
             {at}
           </>
         )}
       </p>
       {!timeline && datesSpan}
+    </div>
+  );
+}
+
+/**
+ * Company + dates on the first line, role + location on the second — the
+ * Full Stack one-pager layout.
+ */
+function ExperienceHead({
+  company,
+  role,
+  location,
+  dates,
+  timeline,
+}: {
+  company: string;
+  role: string;
+  location: string;
+  dates: string;
+  timeline: boolean;
+}) {
+  const datesSpan = dates && <span className={styles.dates}>{timeline ? breakAfterDash(dates) : dates}</span>;
+  return (
+    <div className={styles.experienceHead}>
+      <div className={styles.entryHead}>
+        {timeline && datesSpan}
+        <p>
+          <span className={styles.entryTitle}>{company || role}</span>
+        </p>
+        {!timeline && datesSpan}
+      </div>
+      {(role || location) && company && (
+        <div className={styles.entryHead}>
+          <p>
+            {role && <span>{role}</span>}
+            {role && location && ", "}
+            {location && <span className={styles.muted}>{location}</span>}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

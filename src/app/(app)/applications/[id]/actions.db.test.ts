@@ -100,7 +100,12 @@ describe("setApplicationTheme (#226)", () => {
 
   beforeEach(async () => {
     const font = { headFont: "GARAMOND", bodyFont: "GARAMOND", accent: "#1d1c1a" } as const;
-    await prisma().theme.createMany({ data: [{ id: "editorial", name: "Editorial", ...font }, { id: "classic", name: "Classic", ...font }] });
+    await prisma().theme.createMany({
+      data: [
+        { id: "editorial", name: "Full Stack", ...font },
+        { id: "sidebar", name: "Sidebar", ...font, layout: "SPLIT" },
+      ],
+    });
     await prisma().document.updateMany({ where: { applicationId: "app-1" }, data: { themeId: "editorial" } });
     await prisma().document.createMany({
       data: [
@@ -111,8 +116,8 @@ describe("setApplicationTheme (#226)", () => {
   });
 
   it("gives the resume and the cover letter the theme, whatever they had, and leaves their text alone", async () => {
-    expect(await setApplicationTheme({ id: "app-1", themeId: "classic" })).toEqual({ ok: true, data: null });
-    expect(await themeOf()).toEqual({ RESUME: "classic", COVER_LETTER: "classic", EMAIL: null });
+    expect(await setApplicationTheme({ id: "app-1", themeId: "sidebar" })).toEqual({ ok: true, data: null });
+    expect(await themeOf()).toEqual({ RESUME: "sidebar", COVER_LETTER: "sidebar", EMAIL: null });
     expect(await units()).toEqual(resume);
   });
 
@@ -121,7 +126,7 @@ describe("setApplicationTheme (#226)", () => {
       ok: false,
       error: "That theme doesn't exist anymore. Reload the page to see your themes.",
     });
-    expect(await setApplicationTheme({ id: "gone", themeId: "classic" })).toEqual({ ok: false, error: "That application no longer exists." });
+    expect(await setApplicationTheme({ id: "gone", themeId: "sidebar" })).toEqual({ ok: false, error: "That application no longer exists." });
     expect(await themeOf()).toEqual({ RESUME: "editorial", COVER_LETTER: null, EMAIL: null });
   });
 });

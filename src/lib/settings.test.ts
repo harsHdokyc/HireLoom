@@ -35,7 +35,7 @@ describe("stored settings", () => {
       creativity: "BALANCED",
       strict: true,
       showDiff: true,
-      paper: "A4",
+      paper: "LETTER",
       dateFormat: "DAY_MONTH_YEAR",
       defaultTone: "WARM",
       docLanguage: null,
@@ -43,7 +43,7 @@ describe("stored settings", () => {
       customLanguages: [],
       fileNamePattern: "{name} – {company} – {doc}",
       includeRefs: false,
-      pageLimit: "2",
+      pageLimit: "1",
       nightlyBackup: true,
       jobRetentionHours: 24,
       baseThemeId: "editorial",
@@ -129,7 +129,7 @@ describe("stored settings", () => {
       { key: "jobRetentionHours", value: "5" },
       { key: "theme", value: "dark" },
     ]);
-    expect(settings).toMatchObject({ provider: null, paper: "A4", strict: true, customLanguages: [], quietDays: 7, jobRetentionHours: 24 });
+    expect(settings).toMatchObject({ provider: null, paper: "LETTER", strict: true, customLanguages: [], quietDays: 7, jobRetentionHours: 24 });
     expect(settings).not.toHaveProperty("theme");
   });
 
@@ -138,9 +138,9 @@ describe("stored settings", () => {
     expect(settingsFromRows([{ key: "onePage", value: "true" }]).pageLimit).toBe("1");
     // A limit chosen since wins over the old switch.
     expect(settingsFromRows([{ key: "onePage", value: "false" }, { key: "pageLimit", value: "2" }]).pageLimit).toBe("2");
-    // Unknown, or not chosen: up to two pages.
-    expect(settingsFromRows([{ key: "pageLimit", value: "3" }]).pageLimit).toBe("2");
-    expect(settingsFromRows([]).pageLimit).toBe("2");
+    // Unknown, or not chosen: one page (matches the Full Stack built-in).
+    expect(settingsFromRows([{ key: "pageLimit", value: "3" }]).pageLimit).toBe("1");
+    expect(settingsFromRows([]).pageLimit).toBe("1");
   });
 });
 

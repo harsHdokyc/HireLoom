@@ -57,7 +57,7 @@ export const SECTIONS = [
     optional: true,
     label: "Facts about me",
     title: "Facts about me",
-    hint: "What the AI should know about you that the rest of your profile doesn't say. It reads these when it writes your resumes and cover letters, and never copies them onto a resume as a list.",
+    hint: "What else belongs on your resume and what the AI should know. Profile facts show as Achievements on the Full Stack resume; the AI also reads them when it writes.",
   },
 ] as const;
 

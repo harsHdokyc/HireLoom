@@ -38,7 +38,7 @@ export type ThemeData = {
   photoPosition: PhotoPosition;
 };
 
-/** What a theme that doesn't say otherwise has: the look of the first six built-ins. */
+/** What a theme that doesn't say otherwise has: the look of the Full Stack built-in. */
 export const THEME_STYLE_DEFAULTS = {
   headerStyle: HeaderStyle.PLAIN,
   sidebarStyle: SidebarStyle.PLAIN,
@@ -48,21 +48,25 @@ export const THEME_STYLE_DEFAULTS = {
 } satisfies Partial<ThemeData>;
 type StyleField = keyof typeof THEME_STYLE_DEFAULTS;
 
-/** The built-in themes, in the order the theme picker shows them (RES-2). */
+/**
+ * The only built-in resume theme: a compact, centered, single-column Letter
+ * layout matching a typical full-stack one-pager (uppercase underlined
+ * headings, pipe-separated contact line, summary → skills → experience →
+ * projects → education).
+ */
 export const BUILT_IN_THEMES: ThemeData[] = (
   [
-    { id: "editorial", name: "Editorial", headFont: "NEWSREADER", bodyFont: "GEIST", accent: "#7a3b2e", layout: "SINGLE", align: "LEFT", headingStyle: "PLAIN", density: "REGULAR" },
-    { id: "classic", name: "Classic", headFont: "GARAMOND", bodyFont: "GARAMOND", accent: "#1d1c1a", layout: "SINGLE", align: "CENTER", headingStyle: "RULE", density: "REGULAR", photoPosition: "ABOVE_NAME" },
-    { id: "modern", name: "Modern", headFont: "GEIST", bodyFont: "GEIST", accent: "#2f5d8a", layout: "SPLIT", align: "LEFT", headingStyle: "CAPS", density: "REGULAR", photoShape: "ROUNDED", photoPosition: "SIDEBAR" },
-    { id: "minimal", name: "Minimal", headFont: "PLEX_SANS", bodyFont: "PLEX_SANS", accent: "#6f6a62", layout: "SINGLE", align: "LEFT", headingStyle: "CAPS", density: "AIRY", photoShape: "SQUARE" },
-    { id: "technical", name: "Technical", headFont: "PLEX_MONO", bodyFont: "PLEX_SANS", accent: "#2d6a4f", layout: "SPLIT", align: "LEFT", headingStyle: "RULE", density: "COMPACT", photoShape: "SQUARE", photoPosition: "SIDEBAR" },
-    { id: "ledger", name: "Ledger", headFont: "NEWSREADER", bodyFont: "PLEX_SANS", accent: "#1d1c1a", layout: "SPLIT", align: "LEFT", headingStyle: "RULE", density: "COMPACT", photoShape: "PORTRAIT" },
-    { id: "signal", name: "Signal", headFont: "MANROPE", bodyFont: "MANROPE", accent: "#1f3a5f", layout: "SINGLE", align: "LEFT", headingStyle: "BAR", density: "REGULAR", headerStyle: "BANNER", photoPosition: "HEADER_START" },
-    { id: "studio", name: "Studio", headFont: "SPACE_GROTESK", bodyFont: "INTER", accent: "#1f6f6b", layout: "SPLIT_END", align: "LEFT", headingStyle: "CAPS", density: "REGULAR", sidebarStyle: "TINTED", photoPosition: "SIDEBAR" },
-    { id: "chronicle", name: "Chronicle", headFont: "FRAUNCES", bodyFont: "SOURCE_SERIF", accent: "#7b2337", layout: "SINGLE", align: "LEFT", headingStyle: "RULE", density: "REGULAR", dateStyle: "TIMELINE", photoShape: "PORTRAIT" },
-    { id: "folio", name: "Folio", headFont: "PLAYFAIR", bodyFont: "LORA", accent: "#1d1c1a", layout: "SIDE_HEADINGS", align: "LEFT", headingStyle: "PLAIN", density: "AIRY", photoShape: "ROUNDED", photoPosition: "HEADER_START" },
-    { id: "console", name: "Console", headFont: "JETBRAINS_MONO", bodyFont: "WORK_SANS", accent: "#4a5563", layout: "SPLIT", align: "LEFT", headingStyle: "BAND", density: "COMPACT", sidebarStyle: "TINTED", photoShape: "SQUARE", photoPosition: "SIDEBAR" },
-    { id: "atlas", name: "Atlas", headFont: "LIBRE_CASLON", bodyFont: "INTER", accent: "#a14a1f", layout: "SINGLE", align: "CENTER", headingStyle: "CAPS", density: "REGULAR", headerStyle: "BANNER", dateStyle: "TIMELINE", photoPosition: "ABOVE_NAME" },
+    {
+      id: "editorial",
+      name: "Full Stack",
+      headFont: "GEIST",
+      bodyFont: "GEIST",
+      accent: "#444444",
+      layout: "SINGLE",
+      align: "CENTER",
+      headingStyle: "RULE",
+      density: "COMPACT",
+    },
   ] satisfies (Omit<ThemeData, "builtIn" | StyleField> & Partial<Pick<ThemeData, StyleField>>)[]
 ).map((theme) => ({ ...THEME_STYLE_DEFAULTS, ...theme, builtIn: true }));
 
@@ -107,6 +111,7 @@ export const THEME_FONTS: Record<ThemeFont, { label: string; family: string; ser
  */
 export const ACCENTS = [
   { value: "#1d1c1a", name: "Ink" },
+  { value: "#444444", name: "Charcoal" },
   { value: "#4a5563", name: "Slate" },
   { value: "#1f3a5f", name: "Navy" },
   { value: "#2f5d8a", name: "Blue" },
@@ -141,7 +146,7 @@ export function contrastRatio(a: string, b: string): number {
 /** Whether an accent is dark enough for small text on white (4.5:1). */
 export const readableOnWhite = (accent: string) => contrastRatio(accent, "#ffffff") >= 4.5;
 
-/** A colour's name: an accent swatch's, Minimal's grey, or else its hex value. */
+/** A colour's name: an accent swatch's, a known custom grey, or else its hex value. */
 export function accentName(accent: string): string {
   const value = accent.toLowerCase();
   if (value === "#6f6a62") return "Stone";
@@ -165,7 +170,8 @@ export const HEADING_STYLES: Record<
     marker?: "bar" | "band";
   }
 > = {
-  [HeadingStyle.RULE]: { label: "Underlined", size: 12, weight: 600, uppercase: false, tracking: "0", rule: true, padding: 3 },
+  // Uppercase + rule matches a typical one-page tech resume (PROFESSIONAL SUMMARY, …).
+  [HeadingStyle.RULE]: { label: "Underlined", size: 10, weight: 700, uppercase: true, tracking: ".12em", rule: true, padding: 2 },
   [HeadingStyle.CAPS]: { label: "Small caps", size: 9.5, weight: 600, uppercase: true, tracking: ".14em", rule: false, padding: 0 },
   [HeadingStyle.PLAIN]: { label: "Plain", size: 15, weight: 500, uppercase: false, tracking: "-.005em", rule: false, padding: 0 },
   [HeadingStyle.BAR]: { label: "Accent bar", size: 9.5, weight: 700, uppercase: true, tracking: ".14em", rule: false, padding: 0, marker: "bar" },
@@ -177,7 +183,8 @@ export const DENSITIES: Record<
   Density,
   { label: string; paddingY: number; paddingX: number; gap: number; fontSize: number; lineHeight: number; itemGap: number }
 > = {
-  [Density.COMPACT]: { label: "Compact", paddingY: 38, paddingX: 42, gap: 14, fontSize: 9.5, lineHeight: 1.42, itemGap: 7 },
+  // Tuned for a single Letter page with Achievements: tight margins and gaps.
+  [Density.COMPACT]: { label: "Compact", paddingY: 24, paddingX: 38, gap: 9, fontSize: 9, lineHeight: 1.32, itemGap: 5 },
   [Density.REGULAR]: { label: "Regular", paddingY: 50, paddingX: 54, gap: 20, fontSize: 10.5, lineHeight: 1.5, itemGap: 10 },
   [Density.AIRY]: { label: "Airy", paddingY: 62, paddingX: 64, gap: 26, fontSize: 10.5, lineHeight: 1.65, itemGap: 13 },
 };
@@ -278,7 +285,15 @@ export function resolveTheme(theme: ThemeData, layout: ThemeLayout = theme.layou
     onAccent: contrastRatio(theme.accent, "#ffffff") >= contrastRatio(theme.accent, INK) ? "#ffffff" : INK,
     heading: HEADING_STYLES[theme.headingStyle],
     density: DENSITIES[theme.density],
-    name: serifHeading ? { size: 30, weight: 500 } : { size: 25, weight: 600 },
+    // Compact one-pagers use a smaller name (~21pt on Letter); airy/regular stay larger.
+    name:
+      theme.density === Density.COMPACT
+        ? serifHeading
+          ? { size: 22, weight: 500 }
+          : { size: 21, weight: 600 }
+        : serifHeading
+          ? { size: 30, weight: 500 }
+          : { size: 25, weight: 600 },
   };
 }
 export type ResolvedTheme = ReturnType<typeof resolveTheme>;

@@ -18,10 +18,9 @@ describe("theme files (E5-7)", () => {
   });
 
   it("keeps the header, sidebar and date styles", () => {
-    const atlas = BUILT_IN_THEMES.find((theme) => theme.id === "atlas")!;
-    expect(parseThemeFile(themeFile({ ...atlas, sidebarStyle: "TINTED" }))).toMatchObject({
+    expect(parseThemeFile(themeFile({ ...editorial, headerStyle: "BANNER", sidebarStyle: "TINTED", dateStyle: "TIMELINE" }))).toMatchObject({
       ok: true,
-      theme: { headFont: "LIBRE_CASLON", headerStyle: "BANNER", sidebarStyle: "TINTED", dateStyle: "TIMELINE" },
+      theme: { headFont: "GEIST", headerStyle: "BANNER", sidebarStyle: "TINTED", dateStyle: "TIMELINE" },
     });
   });
 
@@ -35,13 +34,12 @@ describe("theme files (E5-7)", () => {
   });
 
   it("keeps the photo's shape and position, and reads version 2 files without them with the defaults (#224)", () => {
-    const modern = BUILT_IN_THEMES.find((theme) => theme.id === "modern")!;
-    expect(parseThemeFile(themeFile({ ...modern, photoShape: "PORTRAIT" }))).toMatchObject({
+    expect(parseThemeFile(themeFile({ ...editorial, photoShape: "PORTRAIT", photoPosition: "SIDEBAR" }))).toMatchObject({
       ok: true,
       theme: { photoShape: "PORTRAIT", photoPosition: "SIDEBAR" },
     });
-    const { photoShape, photoPosition, ...look } = themeFile(modern).theme;
-    expect([photoShape, photoPosition]).toEqual(["ROUNDED", "SIDEBAR"]);
+    const { photoShape, photoPosition, ...look } = themeFile(editorial).theme;
+    expect([photoShape, photoPosition]).toEqual(["CIRCLE", "HEADER_END"]);
     expect(parseThemeFile({ format: "Hireloom-theme", version: 2, theme: look })).toEqual({
       ok: true,
       theme: { ...look, photoShape: "CIRCLE", photoPosition: "HEADER_END" },

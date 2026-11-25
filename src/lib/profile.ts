@@ -150,7 +150,7 @@ export type ProfileData = {
   /** In the order set by hand, with the ones kept off resumes too. */
   publications: PublicationItem[];
   references: ReferenceItem[];
-  /** "Facts about me": never on a document, only given to the AI. */
+  /** "Facts about me": Achievements on the Full Stack resume, and given to the AI. */
   facts: FactItem[];
 };
 

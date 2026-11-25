@@ -84,7 +84,13 @@ function report(job: Partial<JobView>) {
 vi.mock("@/components/change-status", () => ({ changeStatus: vi.fn() }));
 vi.mock("@/components/toast", () => ({ toast: vi.fn(), toastResult: (result: unknown) => result }));
 
-const theme = (id: string) => BUILT_IN_THEMES.find((entry) => entry.id === id)!;
+const theme = (id: string) => {
+  const base = BUILT_IN_THEMES.find((entry) => entry.id === id) ?? BUILT_IN_THEMES[0];
+  if (id === "sidebar") {
+    return { ...BUILT_IN_THEMES[0], id: "sidebar", name: "Sidebar", layout: "SPLIT" as const, builtIn: false };
+  }
+  return base;
+};
 
 const props: ApplicationViewProps = {
   application: {
@@ -108,8 +114,8 @@ const props: ApplicationViewProps = {
   meta: ["Amsterdam"],
   resume: { units: demoResumeUnits(), theme: theme("editorial") },
   letter: { units: demoLetterUnits(), theme: theme("editorial") },
-  themes: [...BUILT_IN_THEMES, { ...theme("modern"), id: "mine", name: "Mine", builtIn: false }],
-  baseThemeId: "modern",
+  themes: [...BUILT_IN_THEMES, theme("sidebar"), { ...BUILT_IN_THEMES[0], id: "mine", name: "Mine", builtIn: false }],
+  baseThemeId: "editorial",
   email: null,
   writingEmail: null,
   attachments: { resume: "Jane Doe – Ledgerly – Resume.pdf", letter: "Jane Doe – Ledgerly – Cover letter.pdf" },
@@ -174,16 +180,16 @@ describe("the document tabs (E8-2)", () => {
 
   it("shows the tailored resume in its theme, in a single column by default", () => {
     render(<ApplicationView {...props} />);
-    expect(screen.getByText(/^Tailored resume ·/)).toHaveTextContent("Tailored resume · Editorial theme");
+    expect(screen.getByText(/^Tailored resume ·/)).toHaveTextContent("Tailored resume · Full Stack theme");
     const resume = screen.getByRole("article", { name: "Resume" });
     expect(resume.querySelector('[data-unit="summary"]')).toHaveTextContent(demoResumeUnits()[0].text);
-    // Editorial is a single-column theme: nothing to switch.
+    // Full Stack is a single-column theme: nothing to switch.
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
   });
 
   it("lets a sidebar theme use its own layout, saved on the application", async () => {
     const user = userEvent.setup();
-    render(<ApplicationView {...props} resume={{ units: demoResumeUnits(), theme: theme("modern") }} />);
+    render(<ApplicationView {...props} resume={{ units: demoResumeUnits(), theme: theme("sidebar") }} />);
     const resume = screen.getByRole("article", { name: "Resume" });
     expect(within(resume).queryByText("Contact")).not.toBeInTheDocument();
 
@@ -224,28 +230,27 @@ describe("the document tabs (E8-2)", () => {
     render(<ApplicationView {...props} />);
     expect(screen.queryByRole("switch", { name: "Sidebar layout" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Theme: Editorial" }));
+    await user.click(screen.getByRole("button", { name: "Theme: Full Stack" }));
     const menu = screen.getByRole("menu");
-    expect(within(menu).getByRole("menuitemradio", { name: "Editorial" })).toHaveAttribute("aria-checked", "true");
-    expect(within(menu).getByRole("menuitemradio", { name: "Modern base theme" })).toBeInTheDocument();
-    expect(within(menu).getAllByRole("menuitemradio").map((item) => item.textContent).slice(-2)).toEqual(["Atlas", "Mine"]);
+    expect(within(menu).getByRole("menuitemradio", { name: "Full Stack base theme" })).toHaveAttribute("aria-checked", "true");
+    expect(within(menu).getAllByRole("menuitemradio").map((item) => item.textContent).slice(-2)).toEqual(["Sidebar", "Mine"]);
     expect(within(menu).getByRole("separator")).toBeInTheDocument();
 
-    // Shown in the new theme while it's saved: Modern has a sidebar, so its layout switch appears.
-    await user.click(within(menu).getByRole("menuitemradio", { name: "Modern base theme" }));
-    expect(setApplicationTheme).toHaveBeenCalledWith({ id: "app-1", themeId: "modern" });
-    expect(screen.getByRole("button", { name: "Theme: Modern" })).toBeInTheDocument();
+    // Shown in the new theme while it's saved: Sidebar has a sidebar, so its layout switch appears.
+    await user.click(within(menu).getByRole("menuitemradio", { name: "Sidebar" }));
+    expect(setApplicationTheme).toHaveBeenCalledWith({ id: "app-1", themeId: "sidebar" });
+    expect(screen.getByRole("button", { name: "Theme: Sidebar" })).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Sidebar layout" })).toBeInTheDocument();
     await user.click(screen.getByRole("tab", { name: "Cover letter" }));
-    expect(screen.getByRole("button", { name: "Theme: Modern" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Theme: Sidebar" })).toBeInTheDocument();
     await act(async () => answer({ ok: true, data: null }));
   });
 
   it("doesn't save the theme the documents already have", async () => {
     const user = userEvent.setup();
     render(<ApplicationView {...props} initialTab="letter" />);
-    await user.click(screen.getByRole("button", { name: "Theme: Editorial" }));
-    await user.click(screen.getByRole("menuitemradio", { name: "Editorial" }));
+    await user.click(screen.getByRole("button", { name: "Theme: Full Stack" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "Full Stack base theme" }));
     expect(setApplicationTheme).not.toHaveBeenCalled();
   });
 
@@ -254,7 +259,7 @@ describe("the document tabs (E8-2)", () => {
       <ApplicationView
         {...props}
         application={{ ...props.application, followThemeLayout: true }}
-        resume={{ units: demoResumeUnits(), theme: theme("modern") }}
+        resume={{ units: demoResumeUnits(), theme: theme("sidebar") }}
       />,
     );
     expect(screen.getByRole("switch", { name: "Sidebar layout" })).toHaveAttribute("aria-checked", "true");
@@ -348,7 +353,8 @@ describe("editing a unit (E8-3)", () => {
     render(<ApplicationView {...props} />);
     const role = screen.getByRole("group", { name: "Studio Brik role" });
     await user.click(within(role).getByRole("button", { name: "Edit" }));
-    expect(role).toHaveTextContent(/^UX Designer, Studio Brik/);
+    expect(role).toHaveTextContent(/^Studio Brik/);
+    expect(role).toHaveTextContent(/UX Designer,\s*Rotterdam/);
     expect(within(role).getByRole("textbox")).toHaveAccessibleDescription("One bullet per line");
   });
 

@@ -253,6 +253,6 @@ function deleteDescription(applications: number): string {
     applications === 0
       ? "No application uses it."
       : `${applications === 1 ? "One application uses" : `${applications} applications use`} it; their documents will use your base theme instead.`;
-  return `${used} Editorial becomes your base theme. This can't be undone, but you can export the theme first.`;
+  return `${used} Full Stack becomes your base theme. This can't be undone, but you can export the theme first.`;
 }
 
