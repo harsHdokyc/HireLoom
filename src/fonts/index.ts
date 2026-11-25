@@ -14,7 +14,7 @@ export const geist = localFont({
   fallback: ["Helvetica", "Arial", "sans-serif"],
 });
 
-/** Page and section titles; also a resume theme font. */
+/** Page and section titles. Resume themes keep Newsreader. */
 export const newsreader = localFont({
   src: [
     { path: "./newsreader/Newsreader-Variable.woff2", weight: "200 800", style: "normal" },
@@ -94,13 +94,13 @@ export const playfair = localFont({
   preload: false,
 });
 
+/** UI display face: page titles, section titles, the wordmark. */
 export const fraunces = localFont({
   src: "./fraunces/Fraunces-Variable.woff2",
   weight: "100 900",
   variable: "--typeface-fraunces",
   fallback: ["Georgia", "serif"],
   adjustFontFallback: "Times New Roman",
-  preload: false,
 });
 
 export const inter = localFont({

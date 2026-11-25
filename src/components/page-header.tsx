@@ -47,8 +47,8 @@ export function PageBar({ children }: { children: ReactNode }) {
     // -mx-px: over the panel's side borders, so the bar's own line up with them.
     // pt-2: the shell's 8px above the panel, as at its sides and bottom; it
     // stays while the bar sticks, so nothing scrolls by above it.
-    <div className="sticky top-0 z-20 -mx-px bg-paper pt-2">
-      <div className="flex min-h-12 flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-t-panel border border-b-0 border-line-card bg-surface px-10 pt-7 pb-4">
+    <div className="atmosphere sticky top-0 z-20 -mx-px pt-3">
+      <div className="relative flex min-h-14 flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-t-panel border border-b-0 border-line-card bg-surface px-10 pt-8 pb-5 after:absolute after:inset-x-10 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary">
         {children}
       </div>
     </div>

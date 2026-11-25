@@ -36,7 +36,7 @@ export function DropdownMenuContent({
         sideOffset={sideOffset}
         align={align}
         className={cn(
-          "z-30 flex min-w-[230px] flex-col rounded-card border border-line-popover bg-card p-1.5 shadow-menu",
+          "z-30 flex min-w-[230px] flex-col rounded-card border border-line-popover bg-card p-1.5 shadow-menu motion-safe:animate-pop-in",
           className,
         )}
         {...props}

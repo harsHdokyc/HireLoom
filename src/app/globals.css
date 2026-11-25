@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
 /*
- * Design tokens, taken from the prototype (design/Hireloom.dc.html).
- * Each token below becomes a Tailwind utility, e.g. --color-muted → text-muted,
- * --radius-card → rounded-card, --text-title → text-title.
+ * Design tokens. Each one becomes a Tailwind utility, e.g. --color-muted →
+ * text-muted, --radius-card → rounded-card, --text-title → text-title.
+ *
+ * The page is a warm sheet on a stone wall. Actions are the clay thread
+ * (#7a3b2e, the same accent as the marketing site). The sidebar paints its
+ * own ink tokens (see .scheme-ink) so the rail stays dark in both schemes.
  */
 @theme {
   /*
@@ -13,53 +16,52 @@
    * meets WCAG AA (4.5:1) on every surface in both schemes.
    */
 
-  /* Surfaces: a beige shell, like the sidebar, around the screen's panel. */
-  --color-paper: light-dark(#eeebe4, #1a1917); /* shell around the panel, side columns, disabled fields */
-  --color-sidebar: light-dark(#eeebe4, #1a1917);
-  --color-surface: light-dark(#f4f2ed, #22201d); /* the panel each screen sits in */
-  --color-card: light-dark(#fbfaf7, #2a2825);
-  --color-canvas: light-dark(#e8e5de, #141311); /* behind document previews */
-  --color-input: light-dark(#ffffff, #1e1c1a); /* inputs */
+  /* Surfaces: a deep margin around a lighter sheet, so the page reads as an object. */
+  --color-paper: light-dark(#d4cdc2, #0c0b0a); /* shell around the panel, side columns, disabled fields */
+  --color-sidebar: light-dark(#d4cdc2, #0c0b0a);
+  --color-surface: light-dark(#f3efe7, #171614); /* the panel each screen sits in */
+  --color-card: light-dark(#fffdfb, #23211e);
+  --color-canvas: light-dark(#ebe7e0, #0f0e0c); /* behind document previews */
+  --color-input: light-dark(#ffffff, #161513); /* inputs */
 
   /* Text */
-  --color-ink: light-dark(#1d1c1a, #f0ede7);
-  --color-document: light-dark(#2b2a27, #e5e1d9); /* posting text, set like a document */
+  --color-ink: light-dark(#1a1814, #f3efe8);
+  --color-document: light-dark(#2a2722, #e7e2d8); /* posting text, set like a document */
   /* Secondary text: hints, labels, metadata. It passes on every surface
      and on the hover tints, but not on a selected item over the shell
      (4.3:1 in the light scheme): use ink there. */
-  --color-muted: light-dark(#69655d, #aaa59c);
+  --color-muted: light-dark(#5c564e, #b4aea4);
   /* Disabled and decorative only: never for text people need to read. */
-  --color-faint: light-dark(#a29d94, #6e6961);
+  --color-faint: light-dark(#9c968c, #6e6962);
 
-  /* Primary actions: near-black, and near-white in the dark scheme, with
-     on-primary text at 4.5:1 or more. primary-text is for text and icons
-     marking a choice, e.g. a selected chip's label. */
-  --color-primary: light-dark(#222222, #ebe7df);
-  --color-primary-hover: light-dark(#3a3936, #ffffff);
-  --color-on-primary: light-dark(#fbfaf7, #1d1c1a);
-  --color-primary-text: light-dark(#1d1c1a, #f0ede7);
+  /* Primary actions: the same saturated clay in both schemes, white label
+     at 4.5:1 or more. primary-text is for text and icons marking a choice. */
+  --color-primary: #b24a38;
+  --color-primary-hover: #9a3b2c;
+  --color-on-primary: #fffaf7;
+  --color-primary-text: light-dark(#1a1814, #f3efe8);
   /* Focus rings: 3:1 against every surface. */
-  --color-focus: light-dark(#1d1c1a, #f0ede7);
+  --color-focus: light-dark(#1a1814, #f3efe8);
 
-  /* Toasts and tooltips: a dark chip, a little raised in the dark scheme. */
-  --color-inverse: light-dark(#222222, #3b3834);
-  --color-on-inverse: light-dark(#fbfaf7, #f0ede7);
+  /* Toasts and tooltips: an ink chip, a little raised in the dark scheme. */
+  --color-inverse: light-dark(#1a1814, #3a342e);
+  --color-on-inverse: light-dark(#f6f4f0, #f3efe8);
 
   /* Lines */
-  --color-line: light-dark(rgb(29 28 26 / 0.08), rgb(240 237 231 / 0.07)); /* dividers */
-  --color-line-card: light-dark(rgb(29 28 26 / 0.1), rgb(240 237 231 / 0.1));
-  --color-line-field: light-dark(rgb(29 28 26 / 0.14), rgb(240 237 231 / 0.14)); /* chips and other controls named by their text */
+  --color-line: light-dark(rgb(26 24 20 / 0.08), rgb(243 239 232 / 0.08)); /* dividers */
+  --color-line-card: light-dark(rgb(26 24 20 / 0.1), rgb(243 239 232 / 0.1));
+  --color-line-field: light-dark(rgb(26 24 20 / 0.14), rgb(243 239 232 / 0.14)); /* chips and other controls named by their text */
   /* Text fields, whose border is what shows they're fields: 3:1 on every surface (E11-3, WCAG 1.4.11). */
-  --color-line-input: light-dark(rgb(29 28 26 / 0.5), rgb(240 237 231 / 0.42));
-  --color-line-control: light-dark(rgb(29 28 26 / 0.16), rgb(240 237 231 / 0.14)); /* secondary buttons */
-  --color-line-popover: light-dark(rgb(29 28 26 / 0.12), rgb(240 237 231 / 0.12)); /* menus */
-  --color-line-strong: light-dark(rgb(29 28 26 / 0.2), rgb(240 237 231 / 0.24)); /* upcoming steps */
+  --color-line-input: light-dark(rgb(26 24 20 / 0.5), rgb(243 239 232 / 0.42));
+  --color-line-control: light-dark(rgb(26 24 20 / 0.16), rgb(243 239 232 / 0.16)); /* secondary buttons */
+  --color-line-popover: light-dark(rgb(26 24 20 / 0.12), rgb(243 239 232 / 0.12)); /* menus */
+  --color-line-strong: light-dark(rgb(26 24 20 / 0.2), rgb(243 239 232 / 0.24)); /* upcoming steps */
 
   /* Tints for hover, selection and tracks */
-  --color-hover: light-dark(rgb(29 28 26 / 0.05), rgb(240 237 231 / 0.07));
-  --color-selected: light-dark(rgb(29 28 26 / 0.07), rgb(240 237 231 / 0.1));
-  --color-track: light-dark(rgb(29 28 26 / 0.06), rgb(240 237 231 / 0.08));
-  --color-toggle-off: light-dark(rgb(29 28 26 / 0.5), rgb(240 237 231 / 0.42)); /* 3:1, like text fields */
+  --color-hover: light-dark(rgb(26 24 20 / 0.05), rgb(243 239 232 / 0.07));
+  --color-selected: light-dark(rgb(122 59 46 / 0.08), rgb(232 196 176 / 0.12));
+  --color-track: light-dark(rgb(26 24 20 / 0.06), rgb(243 239 232 / 0.08));
+  --color-toggle-off: light-dark(rgb(26 24 20 / 0.5), rgb(243 239 232 / 0.42)); /* 3:1, like text fields */
 
   /* Feedback. error and danger are for text; danger-fill is behind white text. */
   --color-danger: light-dark(#9a4a3a, #f87171); /* remove / destructive text */
@@ -78,32 +80,34 @@
   --color-flash: light-dark(oklch(0.95 0.05 90), rgb(240 200 90 / 0.16)); /* briefly marks content that changed */
 
   /* Application statuses (dots and bars; the label next to them is ink) */
-  --color-status-draft: light-dark(#a29d94, #827c73);
-  --color-status-sent: oklch(0.62 0.09 250);
-  --color-status-screening: oklch(0.62 0.09 205);
-  --color-status-interview: oklch(0.6 0.09 295);
-  --color-status-offer: oklch(0.68 0.1 80);
-  --color-status-accepted: oklch(0.6 0.1 150);
-  --color-status-rejected: oklch(0.58 0.1 30);
+  --color-status-draft: light-dark(#9c968c, #7d776e);
+  --color-status-sent: oklch(0.58 0.14 250);
+  --color-status-screening: oklch(0.58 0.12 195);
+  --color-status-interview: oklch(0.55 0.14 300);
+  --color-status-offer: oklch(0.68 0.13 75);
+  --color-status-accepted: oklch(0.55 0.13 155);
+  --color-status-rejected: oklch(0.55 0.14 28);
   --color-status-declined: light-dark(#6f6a62, #958f86);
 
   /* Radii */
-  --radius-control: 8px; /* buttons, inputs, nav items */
-  --radius-toast: 12px;
-  --radius-card: 12px;
-  --radius-panel: 12px; /* large cards and panels */
-  --radius-dialog: 16px;
+  --radius-control: 9px; /* buttons, inputs, nav items */
+  --radius-toast: 14px;
+  --radius-card: 14px;
+  --radius-panel: 18px; /* large cards and panels */
+  --radius-dialog: 20px;
 
   /* Shadows: warm in the light scheme, deeper in the dark one, where a faint one wouldn't show. */
-  --shadow-page: 0 1px 2px rgb(0 0 0 / 0.06), 0 12px 40px light-dark(rgb(40 35 25 / 0.1), rgb(0 0 0 / 0.5));
-  --shadow-dialog: 0 8px 32px light-dark(rgb(40 35 25 / 0.16), rgb(0 0 0 / 0.5));
-  --shadow-raised: 0 1px 2px light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.5)); /* selected segment */
-  --shadow-control: 0 1px 3px light-dark(rgb(40 35 25 / 0.08), rgb(0 0 0 / 0.3)); /* fields and secondary buttons */
-  --shadow-cta: 0 1px 3px light-dark(rgb(40 35 25 / 0.14), rgb(0 0 0 / 0.4));
+  --shadow-page: 0 1px 2px rgb(0 0 0 / 0.04), 0 16px 40px light-dark(rgb(48 32 20 / 0.08), rgb(0 0 0 / 0.45));
+  --shadow-card: 0 1px 1px rgb(28 18 12 / 0.05), 0 14px 32px light-dark(rgb(48 32 20 / 0.1), rgb(0 0 0 / 0.45));
+  --shadow-card-hover: 0 10px 24px light-dark(rgb(178 74 56 / 0.18), rgb(0 0 0 / 0.55));
+  --shadow-dialog: 0 12px 40px light-dark(rgb(48 32 20 / 0.16), rgb(0 0 0 / 0.5));
+  --shadow-raised: 0 1px 2px light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.45)); /* selected segment */
+  --shadow-control: 0 1px 2px light-dark(rgb(48 32 20 / 0.06), rgb(0 0 0 / 0.28)); /* fields and secondary buttons */
+  --shadow-cta: 0 1px 2px light-dark(rgb(90 36 24 / 0.22), rgb(0 0 0 / 0.4));
   --shadow-knob: 0 1px 2px rgb(0 0 0 / 0.2);
-  --shadow-menu: 0 8px 32px light-dark(rgb(40 35 25 / 0.16), rgb(0 0 0 / 0.55));
+  --shadow-menu: 0 10px 36px light-dark(rgb(48 32 20 / 0.16), rgb(0 0 0 / 0.55));
   --shadow-toolbar: 0 4px 14px light-dark(rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.5));
-  --shadow-toast: 0 8px 32px light-dark(rgb(0 0 0 / 0.18), rgb(0 0 0 / 0.55));
+  --shadow-toast: 0 10px 32px light-dark(rgb(0 0 0 / 0.18), rgb(0 0 0 / 0.55));
 
   /* Type scale. Sizes follow the prototype; text-xs (12px) and text-sm
      (14px) keep Tailwind's defaults. */
@@ -117,17 +121,21 @@
   --text-field--line-height: 1.4;
   --text-lead: 15px; /* page introductions */
   --text-lead--line-height: 1.55;
-  --text-section: 24px; /* section titles (serif) */
-  --text-section--line-height: 1.2;
-  --text-section--letter-spacing: -0.01em;
-  --text-section--font-weight: 500;
-  --text-title: 40px; /* page titles (serif) */
-  --text-title--line-height: 1.1;
-  --text-title--letter-spacing: -0.015em;
-  --text-title--font-weight: 400;
+  --text-section: 30px; /* section titles (serif) */
+  --text-section--line-height: 1.12;
+  --text-section--letter-spacing: -0.03em;
+  --text-section--font-weight: 560;
+  --text-title: 52px; /* page titles (serif) */
+  --text-title--line-height: 0.98;
+  --text-title--letter-spacing: -0.035em;
+  --text-title--font-weight: 560;
 
-  /* Motion. Use with motion-safe: so reduced-motion users don't get it. */
-  --animate-toast-in: toast-in 160ms ease-out;
+  /* Motion. Use with motion-safe: so reduced-motion users don't get it.
+     One ease for the product: quick out, no bounce. */
+  --ease-loom: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-toast-in: toast-in 200ms var(--ease-loom);
+  --animate-screen-in: rise 680ms var(--ease-loom) both;
+  --animate-pop-in: pop-in 180ms var(--ease-loom) both;
   /* Only an opacity change, after a pause, so it's fine without motion-safe. */
   --animate-skeleton-in: skeleton-in 200ms ease-out 150ms both;
 
@@ -135,6 +143,28 @@
     from {
       opacity: 0;
       transform: translateY(8px);
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+
+  @keyframes wash {
+    from {
+      background-position: 0% 0%, 100% 100%;
+    }
+    to {
+      background-position: 14% 10%, 86% 88%;
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
     }
   }
 
@@ -160,7 +190,7 @@
 /* Fonts come from next/font (src/fonts), which sets the --typeface-* variables at runtime. */
 @theme inline {
   --font-sans: var(--typeface-geist);
-  --font-serif: var(--typeface-newsreader);
+  --font-serif: var(--typeface-fraunces);
   --font-mono: var(--typeface-plex-mono);
   --font-plex-sans: var(--typeface-plex-sans);
   --font-garamond: var(--typeface-eb-garamond);
@@ -181,7 +211,7 @@
 
   /* Jumps to an anchor or a focused field stop below the page bar (97px, 119px on an application, with the 8px above it), not under it. */
   html {
-    scroll-padding-top: 128px;
+    scroll-padding-top: 148px;
   }
 
   body {
@@ -189,6 +219,12 @@
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 14px;
+  }
+
+  /* Fraunces as the display face: a little softness, optical size from the size it's set at. */
+  .font-serif {
+    font-optical-sizing: auto;
+    font-variation-settings: "SOFT" 40, "WONK" 1;
   }
 
   a {
@@ -221,5 +257,141 @@
    panel's bottom border and the shell's 8px margin under it), for screens
    that keep to the window. */
 @utility h-panel {
-  height: calc(100dvh - 9px);
+  height: calc(100dvh - 13px);
+}
+
+/* The margin around the sheet. A clay wash drifts slowly so the frame isn't a flat fill. */
+.atmosphere {
+  background-color: var(--color-paper);
+  background-image:
+    radial-gradient(980px 560px at 100% -12%, color-mix(in srgb, #b24a38 42%, transparent), transparent 64%),
+    radial-gradient(720px 480px at -12% 112%, color-mix(in srgb, #b24a38 28%, transparent), transparent 62%);
+  background-attachment: fixed;
+  background-size: 130% 130%, 130% 130%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .atmosphere {
+    animation: wash 14s ease-in-out infinite alternate;
+  }
+}
+
+/* The sidebar (and the sign-in panel) stay ink even when the page is light.
+   light-dark() is resolved where the token is defined, so these copies are
+   set again here rather than inherited from :root. */
+.scheme-ink {
+  color-scheme: dark;
+  --color-paper: #0e0d0c;
+  --color-sidebar: #0e0d0c;
+  --color-surface: #161412;
+  --color-card: #1c1a17;
+  --color-canvas: #0e0d0c;
+  --color-input: #141210;
+  --color-ink: #f4f0e8;
+  --color-document: #e7e2d8;
+  --color-muted: #b7b1a6;
+  --color-faint: #7a746c;
+  --color-primary: #b24a38;
+  --color-primary-hover: #9a3b2c;
+  --color-on-primary: #fffaf7;
+  --color-primary-text: #f4f0e8;
+  --color-focus: #f4f0e8;
+  --color-inverse: #e8c4b0;
+  --color-on-inverse: #1c120e;
+  --color-line: rgb(244 240 232 / 0.1);
+  --color-line-card: rgb(244 240 232 / 0.12);
+  --color-line-field: rgb(244 240 232 / 0.16);
+  --color-line-input: rgb(244 240 232 / 0.42);
+  --color-line-control: rgb(244 240 232 / 0.16);
+  --color-line-popover: rgb(244 240 232 / 0.14);
+  --color-line-strong: rgb(244 240 232 / 0.24);
+  --color-hover: rgb(244 240 232 / 0.08);
+  --color-selected: rgb(232 196 176 / 0.16);
+  --color-track: rgb(244 240 232 / 0.08);
+  --color-toggle-off: rgb(244 240 232 / 0.42);
+}
+
+@layer components {
+  /* Every panel carries a clay rail, so cards don't read as plain bordered boxes. */
+  .rounded-panel.border.bg-card,
+  .rounded-card.border.bg-card {
+    box-shadow: inset 3px 0 0 var(--color-primary), var(--shadow-card);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The sticky page bar is the first child and stays put. Everything under it rises in. */
+  .screen > :nth-child(n + 2) {
+    animation: rise 680ms var(--ease-loom) both;
+  }
+  .screen > :nth-child(2) {
+    animation-delay: 50ms;
+  }
+  .screen > :nth-child(3) {
+    animation-delay: 130ms;
+  }
+  .screen > :nth-child(4) {
+    animation-delay: 210ms;
+  }
+
+  section.rounded-panel.border.bg-card,
+  article.rounded-panel.border.bg-card,
+  a.rounded-panel.border.bg-card,
+  a.rounded-card.border.bg-card,
+  button.rounded-panel.border.bg-card,
+  button.rounded-card.border.bg-card,
+  .loom-card {
+    transition:
+      transform 320ms var(--ease-loom),
+      box-shadow 320ms var(--ease-loom),
+      border-color 180ms ease;
+  }
+
+  section.rounded-panel.border.bg-card:hover,
+  article.rounded-panel.border.bg-card:hover,
+  a.rounded-panel.border.bg-card:hover,
+  a.rounded-card.border.bg-card:hover,
+  button.rounded-panel.border.bg-card:hover,
+  button.rounded-card.border.bg-card:hover,
+  .loom-card:hover {
+    transform: translateY(-6px);
+    box-shadow: inset 3px 0 0 var(--color-primary), var(--shadow-card-hover);
+  }
+
+  [role="dialog"],
+  [role="alertdialog"] {
+    animation: pop-in 180ms var(--ease-loom) both;
+  }
+}
+
+/* Sign-in panel: threads drifting, once, slowly. The working app does not loop. */
+.thread-field {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-sidebar);
+}
+
+.thread-field::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image: repeating-linear-gradient(
+    -18deg,
+    transparent 0 22px,
+    color-mix(in srgb, var(--color-primary) 70%, transparent) 22px 23px
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .thread-field::before {
+    animation: thread-drift 28s linear infinite;
+  }
+}
+
+@keyframes thread-drift {
+  to {
+    transform: translate3d(48px, 28px, 0);
+  }
 }

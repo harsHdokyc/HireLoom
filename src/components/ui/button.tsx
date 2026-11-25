@@ -12,11 +12,11 @@ export type ButtonVariant =
 export type ButtonSize = "lg" | "md" | "sm";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap motion-safe:transition-colors disabled:cursor-not-allowed aria-disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-2 rounded-control font-medium whitespace-nowrap motion-safe:transition-[transform,background-color,border-color,box-shadow,color] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] disabled:active:scale-100 aria-disabled:active:scale-100 disabled:cursor-not-allowed aria-disabled:cursor-not-allowed";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary font-semibold text-on-primary shadow-cta hover:bg-primary-hover disabled:bg-faint aria-disabled:bg-faint",
+    "bg-primary font-semibold text-on-primary shadow-cta hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-card-hover disabled:bg-faint disabled:hover:translate-y-0 disabled:hover:shadow-none aria-disabled:bg-faint aria-disabled:hover:translate-y-0",
   secondary:
     "border border-line-control bg-input text-ink shadow-control hover:border-line-strong hover:bg-hover disabled:border-line-field disabled:text-muted aria-disabled:text-muted",
   // Text buttons have no horizontal padding so they line up with the text around them.

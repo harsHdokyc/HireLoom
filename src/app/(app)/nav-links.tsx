@@ -39,13 +39,17 @@ export function NavLinks({ counts }: { counts?: Record<string, number> } = {}) {
                 aria-current={active ? "page" : undefined}
                 title={collapsed ? label : undefined}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-control px-3 py-1.5 text-sm font-medium hover:bg-hover hover:text-ink motion-safe:transition-colors",
+                  "group/nav flex items-center gap-2 rounded-control px-3 py-2 text-sm font-medium hover:bg-hover hover:text-ink motion-safe:transition-[background-color,color,box-shadow,transform] motion-safe:duration-200",
                   collapsed && "relative justify-center px-1.5",
                   // One or the other: cn() doesn't merge, so both would leave the CSS order to pick.
-                  active ? "bg-hover text-ink" : "text-muted",
+                  active ? "bg-primary/15 text-ink shadow-[inset_3px_0_0_0_var(--color-primary)]" : "text-muted",
                 )}
               >
-                <Icon size={16} aria-hidden="true" className="shrink-0" />
+                <Icon
+                  size={16}
+                  aria-hidden="true"
+                  className="shrink-0 motion-safe:transition-transform motion-safe:duration-200 group-hover/nav:translate-x-0.5 group-hover/nav:scale-110"
+                />
                 <span className={cn(collapsed && "sr-only")}>{label}</span>
                 {counts?.[href] ? (
                   <span

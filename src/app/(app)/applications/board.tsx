@@ -162,7 +162,7 @@ function CardFace({ row, lifted = false, onOpen }: { row: ApplicationRow; lifted
   return (
     <div
       className={cn(
-        "group flex cursor-grab flex-col gap-1.5 rounded-[10px] border border-line-card bg-card p-3.5 pr-9 shadow-control hover:border-line-strong",
+        "group flex cursor-grab flex-col gap-1.5 rounded-[10px] border border-line-card bg-card p-3.5 pr-9 shadow-control motion-safe:transition-[box-shadow,border-color] motion-safe:duration-200 hover:border-line-strong hover:shadow-card-hover",
         lifted && "cursor-grabbing shadow-menu",
       )}
     >

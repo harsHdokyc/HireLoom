@@ -118,7 +118,7 @@ export function Gallery({ application }: { application: DemoApplication | null }
           <span className="font-mono text-sm">Plex Mono</span>
           <span className="font-plex-sans text-sm">Plex Sans</span>
           <span className="font-garamond text-sm">EB Garamond</span>
-          <span className="font-serif text-sm italic">Newsreader italic</span>
+          <span className="font-serif text-sm">Fraunces</span>
         </Row>
         <Row label="Feedback">
           <span className="text-sm text-success">Success</span>

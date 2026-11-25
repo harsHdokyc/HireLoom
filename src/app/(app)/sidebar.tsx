@@ -59,7 +59,7 @@ export function Sidebar({
         <Link
           href="/new?fresh=1"
           title="New application"
-          className="mb-2 flex min-h-[34px] items-center gap-1.5 rounded-control bg-primary px-3 text-sm font-semibold text-on-primary shadow-cta hover:bg-primary-hover hover:text-on-primary motion-safe:transition-colors group-data-collapsed/sidebar:justify-center group-data-collapsed/sidebar:px-1.5"
+          className="mb-2 flex min-h-10 items-center gap-1.5 rounded-control bg-primary px-3 text-sm font-semibold text-on-primary shadow-cta hover:-translate-y-0.5 hover:bg-primary-hover hover:text-on-primary hover:shadow-card-hover motion-safe:transition-[transform,background-color,box-shadow] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] active:translate-y-0 active:scale-[0.98] group-data-collapsed/sidebar:justify-center group-data-collapsed/sidebar:px-1.5"
         >
           <Plus size={16} aria-hidden="true" className="shrink-0" />
           {/* Hidden while collapsed, but still the link's name. */}

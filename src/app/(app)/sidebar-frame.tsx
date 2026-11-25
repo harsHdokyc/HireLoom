@@ -47,7 +47,7 @@ export function SidebarFrame({
       <aside
         data-collapsed={collapsed || undefined}
         className={cn(
-          "group/sidebar sticky top-0 flex h-screen shrink-0 flex-col self-start overflow-x-hidden overflow-y-auto border-r border-line bg-sidebar motion-safe:transition-[width] motion-safe:duration-200",
+          "scheme-ink group/sidebar sticky top-0 flex h-screen shrink-0 flex-col self-start overflow-x-hidden overflow-y-auto border-r border-line bg-sidebar text-ink motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
           collapsed ? "w-12" : "w-[260px]",
         )}
       >

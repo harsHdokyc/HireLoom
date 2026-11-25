@@ -72,7 +72,7 @@ export function FieldShell({
 
 /** The look of text inputs, textareas and selects, without a width. */
 export const controlBaseClassName =
-  "rounded-control border border-line-input bg-input text-field text-ink shadow-control focus:border-primary aria-invalid:border-error disabled:cursor-not-allowed disabled:bg-paper disabled:text-muted";
+  "rounded-control border border-line-input bg-input text-field text-ink shadow-control motion-safe:transition-[border-color,box-shadow] motion-safe:duration-200 focus:border-primary aria-invalid:border-error disabled:cursor-not-allowed disabled:bg-paper disabled:text-muted";
 
 /** Shared look of text inputs, textareas and selects, filling their container. */
 export const controlClassName = `w-full ${controlBaseClassName}`;

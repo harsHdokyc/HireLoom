@@ -1,5 +1,6 @@
-/* Hireloom's website. The colours and type follow the app (src/app/globals.css):
-   warm paper, ink, Newsreader for titles and Geist for the rest. */
+/* Hireloom's website. Colours follow the app (src/app/globals.css):
+   a stone wall, a warm sheet, and the clay thread for actions.
+   Titles stay in Newsreader; the app's Fraunces file is not shipped here. */
 
 @font-face {
   font-family: "Newsreader";
@@ -31,24 +32,24 @@
 :root {
   color-scheme: light dark;
 
-  --paper: light-dark(#eeebe4, #1a1917);
-  --surface: light-dark(#f4f2ed, #22201d);
-  --card: light-dark(#fbfaf7, #2a2825);
-  --canvas: light-dark(#e8e5de, #141311);
-  --ink: light-dark(#1d1c1a, #f0ede7);
-  --ink-soft: light-dark(#2b2a27, #e5e1d9);
-  --muted: light-dark(#69655d, #aaa59c);
-  --faint: light-dark(#a29d94, #6e6961);
-  --accent: light-dark(#7a3b2e, #dfa592);
-  --accent-wash: light-dark(rgb(122 59 46 / 0.07), rgb(223 165 146 / 0.1));
-  --primary: light-dark(#222222, #ebe7df);
-  --primary-hover: light-dark(#3a3936, #ffffff);
-  --on-primary: light-dark(#fbfaf7, #1d1c1a);
-  --line: light-dark(rgb(29 28 26 / 0.08), rgb(240 237 231 / 0.07));
-  --line-card: light-dark(rgb(29 28 26 / 0.1), rgb(240 237 231 / 0.1));
-  --line-control: light-dark(rgb(29 28 26 / 0.16), rgb(240 237 231 / 0.16));
-  --hover: light-dark(rgb(29 28 26 / 0.05), rgb(240 237 231 / 0.07));
-  --focus: light-dark(#1d1c1a, #f0ede7);
+  --paper: light-dark(#e8e4dc, #141311);
+  --surface: light-dark(#f6f4f0, #1c1a18);
+  --card: light-dark(#fffcf8, #252320);
+  --canvas: light-dark(#ebe7e0, #0f0e0c);
+  --ink: light-dark(#1a1814, #f3efe8);
+  --ink-soft: light-dark(#2a2722, #e7e2d8);
+  --muted: light-dark(#5c564e, #b4aea4);
+  --faint: light-dark(#9c968c, #6e6962);
+  --accent: light-dark(#7a3b2e, #e8c4b0);
+  --accent-wash: light-dark(rgb(122 59 46 / 0.08), rgb(232 196 176 / 0.12));
+  --primary: light-dark(#7a3b2e, #e8c4b0);
+  --primary-hover: light-dark(#8a4636, #f3d5c6);
+  --on-primary: light-dark(#fffaf7, #1c120e);
+  --line: light-dark(rgb(26 24 20 / 0.08), rgb(243 239 232 / 0.08));
+  --line-card: light-dark(rgb(26 24 20 / 0.1), rgb(243 239 232 / 0.1));
+  --line-control: light-dark(rgb(26 24 20 / 0.16), rgb(243 239 232 / 0.16));
+  --hover: light-dark(rgb(26 24 20 / 0.05), rgb(243 239 232 / 0.07));
+  --focus: light-dark(#1a1814, #f3efe8);
 
   /* The dark band and the code blocks stay dark in both themes. */
   --band: light-dark(#1d1c1a, #11100f);
@@ -59,11 +60,11 @@
   --on-code: #ebe7df;
   --code-muted: #8a857c;
 
-  --status-sent: oklch(0.62 0.09 250);
-  --status-screening: oklch(0.62 0.09 205);
-  --status-interview: oklch(0.6 0.09 295);
-  --status-offer: oklch(0.68 0.1 80);
-  --status-accepted: oklch(0.6 0.1 150);
+  --status-sent: oklch(0.58 0.14 250);
+  --status-screening: oklch(0.58 0.12 195);
+  --status-interview: oklch(0.55 0.14 300);
+  --status-offer: oklch(0.68 0.13 75);
+  --status-accepted: oklch(0.55 0.13 155);
 
   --shadow-window: 0 1px 2px rgb(0 0 0 / 0.05), 0 24px 60px -24px light-dark(rgb(40 35 25 / 0.35), rgb(0 0 0 / 0.7)), 0 8px 24px light-dark(rgb(40 35 25 / 0.06), rgb(0 0 0 / 0.3));
   --shadow-float: 0 1px 2px rgb(0 0 0 / 0.06), 0 18px 48px -12px light-dark(rgb(40 35 25 / 0.3), rgb(0 0 0 / 0.65));
@@ -78,7 +79,7 @@
 
   --gutter: 16px;
   --radius: 12px;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 :root[data-theme="light"] { color-scheme: light; }
 :root[data-theme="dark"] { color-scheme: dark; }

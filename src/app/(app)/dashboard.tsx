@@ -15,7 +15,7 @@ import { Greeting } from "./greeting";
 import { PeriodFilter, PeriodScoped } from "./period-filter";
 import { QuietDays } from "./quiet-days";
 
-const card = "flex flex-col rounded-panel border border-line-card bg-card";
+const card = "loom-card flex flex-col rounded-panel border border-line-card bg-card";
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
 /** The dashboard (DSH-1 to DSH-6): the funnel, where things stand, what's worth a look, and the calendar. */
@@ -123,7 +123,7 @@ function Figure({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex flex-col-reverse gap-0.5">
       <dt className="text-label text-muted">{label}</dt>
-      <dd className="font-serif text-[32px] leading-none tabular-nums">{value}</dd>
+      <dd className="font-serif text-[44px] leading-none tracking-[-0.03em] text-primary tabular-nums">{value}</dd>
     </div>
   );
 }

@@ -71,7 +71,7 @@ export function CalendarCard({
     <section
       aria-labelledby="calendar-heading"
       aria-busy={pending || undefined}
-      className={cn("flex flex-col gap-4 rounded-panel border border-line-card bg-card px-6 pt-[26px] pb-5", pending && "opacity-60 motion-safe:transition-opacity")}
+      className={cn("loom-card flex flex-col gap-4 rounded-panel border border-line-card bg-card px-6 pt-[26px] pb-5", pending && "opacity-60 motion-safe:transition-opacity")}
     >
       <div className="flex items-baseline justify-between gap-3">
         <h2 id="calendar-heading" className="text-[15px] font-medium">
